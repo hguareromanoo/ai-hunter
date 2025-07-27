@@ -99,11 +99,6 @@ async def run_full_diagnostic_flow(form_data: LeadProfileInput):
         # 4. Render and return the final HTML report
         html_content = renderizar_relatorio(report_data.dict())
         logger.info("✅ Relatório HTML gerado com sucesso")
-        from request_post import convert_html_to_pdf_and_send
-        convert_html_to_pdf_and_send(form_data, html_content)
-
-
-
         return HTMLResponse(content=html_content, status_code=200)
     
 
