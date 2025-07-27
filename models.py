@@ -2,9 +2,11 @@ from pydantic_ai import Agent
 from schemas import LeadProfileInput, OpportunitiesOutput, Scores
 from dotenv import load_dotenv
 import json
-
+import logging
 load_dotenv()
 
+logging.basicConfig
+logger=logging.getLogger(__name__)
 # This would typically be in a separate file, but including here for simplicity
 # In a real app, load this from a JSON or config file.
 ALL_QUESTIONS_DATA = {
