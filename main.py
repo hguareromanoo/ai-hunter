@@ -5,8 +5,10 @@ from render_report import renderizar_relatorio
 from schemas import LeadProfileInput, FinalReportData, Opportunity
 from models import calculate_scores, opportunityTracker, researchAgent
 from database import db_manager, get_db_pool
+from webhook_service import convert_html_to_pdf_and_send_webhook
 import json
 import logging
+import asyncio
 
 # Configurar logging
 logging.basicConfig(level=logging.INFO)
@@ -71,8 +73,14 @@ async def run_full_diagnostic_flow(form_data: LeadProfileInput):
         
         opportunities = opportunities_result.output.opportunities
         logger.info(f"💡 Geradas {len(opportunities)} oportunidades")
-        introduction_result = researchAgent("Faça a pesquisa de mercado para o setor {form_data.p1_sector} de 400 caracteres em dois parágrafos",deps=form_data)
+        
+        # Corrigido o f-string para funcionar corretamente
+        introduction_result = await researchAgent.run(
+            f"Faça a pesquisa de mercado para o setor {form_data.p1_sector} de 400 caracteres em dois parágrafos",
+            deps=form_data
+        )
         introduction_output = introduction_result.output if introduction_result and introduction_result.output else "Introdução não disponível."
+        
         # 2. Consolidate data for the report
         report_data = FinalReportData(
             empresa={"nome": form_data.name or "Sua Empresa"},
@@ -96,19 +104,32 @@ async def run_full_diagnostic_flow(form_data: LeadProfileInput):
         else:
             logger.warning("⚠️  Executando sem salvar no banco de dados")
 
-        # 4. Render and return the final HTML report
+        # 4. Render HTML report
         html_content = renderizar_relatorio(report_data.dict())
         logger.info("✅ Relatório HTML gerado com sucesso")
-        from request_post import convert_html_to_pdf_and_send
-        convert_html_to_pdf_and_send(form_data, html_content)
+        
+        # 5. Convert form_data to dict for webhook
+        form_data_dict = form_data.model_dump(by_alias=True)
+        
+        # 6. Send to webhook in background (não bloqueia a resposta)
+        logger.info("🔄 Enviando dados para webhook em background...")
+        
+        # Usar try/except para não quebrar a API se o webhook falhar
+        try:
+            asyncio.create_task(
+                convert_html_to_pdf_and_send_webhook(form_data_dict, html_content)
+            )
+        except Exception as webhook_error:
+            logger.warning(f"⚠️  Erro ao iniciar task do webhook: {webhook_error}")
 
-
-
+        # 7. Return HTML immediately
         return HTMLResponse(content=html_content, status_code=200)
     
 
     except Exception as e:
         logger.error(f"❌ Erro no processamento: {str(e)}")
+        import traceback
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"An unexpected error occurred: {str(e)}")
 
 async def save_to_database(form_data: LeadProfileInput, report_data: FinalReportData):

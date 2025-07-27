@@ -54,6 +54,7 @@ class FinalReportData(BaseModel):
     This will be stored in the `ai_full_report_json` column.
     """
     empresa: Dict[str, Any]
+    introduction: str
     scores_radar: Scores
     score_final: float
     relatorio_oportunidades: List[Opportunity]
