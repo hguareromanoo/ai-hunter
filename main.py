@@ -78,7 +78,7 @@ async def run_full_diagnostic_flow(form_data: LeadProfileInput):
             empresa={"nome": form_data.name or "Sua Empresa"},
             scores_radar=radar_scores,
             score_final=final_score,
-            introduction=introduction_output
+            introduction=introduction_output,
             relatorio_oportunidades=opportunities,
             relatorio_riscos=[ 
                 {"titulo": "Segurança de Dados", "descricao": "A implementação de IA exige atenção redobrada à segurança dos dados e conformidade com a LGPD."},
