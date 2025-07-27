@@ -111,18 +111,19 @@ researchAgent = Agent(
                     " Use uma linguagem acessível e evite jargões técnicos desnecessários. " \
     )
 )
+
 @researchAgent.system_prompt
 async def add_forms_response(ctx):
-       form: LeadProfileInput = ctx.deps
-       context = "Faça uma pesquisa de mercado sobre IA para empresas desse perfil:\n"
-       context += f"- Setor: {form.p1_sector}\n"
-       context += f"- Porte: {form.p2_company_size}\n"
-       context += f"- Gargalo Principal: {form.p4_main_pain}\n"
-       context += f"- Área Crítica: {form.p5_critical_area}\n"
-       context += f"- Maturidade Digital: {form.p7_digital_maturity}\n"
-       context += f"- Capacidade de Investimento: {form.p8_investment}\n"
-       context += "\nUse estas informações para gerar 3 oportunidades de IA realistas e impactantes."
-       return context
+    form: LeadProfileInput = ctx.deps
+    context = "Faça uma pesquisa de mercado sobre IA para empresas desse perfil:\n"
+    context += f"- Setor: {form.p1_sector}\n"
+    context += f"- Porte: {form.p2_company_size}\n"
+    context += f"- Gargalo Principal: {form.p4_main_pain}\n"
+    context += f"- Área Crítica: {form.p5_critical_area}\n"
+    context += f"- Maturidade Digital: {form.p7_digital_maturity}\n"
+    context += f"- Capacidade de Investimento: {form.p8_investment}\n"
+    context += "\nGere uma análise de mercado de IA específica para este perfil empresarial em 2 parágrafos, máximo 400 caracteres."
+    return context
 
 
 
