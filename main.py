@@ -62,9 +62,9 @@ async def run_full_diagnostic_flow(form_data: LeadProfileInput):
     
     try:
         logger.info(f"📝 Processando dados para: {form_data.name}")
-        
+        forms = form_data.dict()
         # 1. Run AI analysis and scoring (independente do DB)
-        radar_scores, final_score = calculate_scores(form_data)
+        radar_scores, final_score = calculate_scores(forms)
         logger.info(f"📊 Scores calculados - Final: {final_score}")
         logger.info(f"📊 Scores radar: {radar_scores.dict()}")
         
