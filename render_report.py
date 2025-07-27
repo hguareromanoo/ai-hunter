@@ -23,6 +23,17 @@ def renderizar_relatorio(dados_diagnostico: dict) -> str:
     dados_completos['data_geracao'] = datetime.datetime.now().strftime("%d/%m/%Y")
     dados_completos['ano_atual'] = datetime.datetime.now().year
 
+    # Garante que scores_radar existe e tem a estrutura correta
+    if 'scores_radar' not in dados_completos or not isinstance(dados_completos['scores_radar'], dict):
+        print("⚠️  WARNING: scores_radar não encontrado ou inválido, usando valores padrão")
+        dados_completos['scores_radar'] = {
+            'automation_readiness': 0,
+            'digital_maturity': 0,
+            'investment_capacity': 0,
+            'urgency_level': 0,
+            'pain_intensity': 0
+        }
+
     # DEBUG: Log dos dados que estão sendo passados para o template
     print(f"DEBUG - Score final para template: {dados_completos.get('score_final', 'NÃO ENCONTRADO')}")
     print(f"DEBUG - Introduction: {dados_completos.get('introduction', 'NÃO ENCONTRADO')[:100] if dados_completos.get('introduction') else 'VAZIO'}...")
@@ -40,19 +51,19 @@ if __name__ == "__main__":
         "introduction": "Esta é uma introdução de teste para verificar se o template está funcionando corretamente.",
         "score_final": 7.5,
         "scores_radar": {
-            "poder_de_decisao": 8.0,
-            "cultura_e_talentos": 6.5,
-            "processos_e_automacao": 7.0,
-            "inovacao_de_produtos": 5.5,
-            "inteligencia_de_mercado": 8.5
+            "automation_readiness": 80,
+            "digital_maturity": 65,
+            "investment_capacity": 70,
+            "urgency_level": 85,
+            "pain_intensity": 75
         },
         "relatorio_oportunidades": [
             {
                 "titulo": "Automação de Processos",
-                "descricao": "Implementar RPA para automatizar tarefas repetitivas",
-                "roi_estimado": "200%",
-                "timeline": "3-6 meses",
-                "investimento": "R$ 50.000"
+                "description": "Implementar RPA para automatizar tarefas repetitivas",
+                "roi": "200%",
+                "priority": "alta",
+                "case": "Empresa X reduziu 40% do tempo em processos manuais"
             }
         ],
         "relatorio_riscos": [

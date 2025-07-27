@@ -6,14 +6,14 @@ from datetime import datetime
 
 # Configurações
 RENDER_URL = "https://ai-hunter.onrender.com/api/v2/diagnostico"
-LOCAL_URL = "http://localhost:8000/api/v2/diagnostico"
+LOCAL_URL = "http://localhost:8001/api/v2/diagnostico"
 
 # Use RENDER_URL por padrão, LOCAL_URL para testes locais
 API_URL = RENDER_URL
 
 # Mock data baseado no LeadProfileInput schema
 test_form_data = {
-    "name": "João Silva",
+    "name": "Joao Silva",
     "email": "joao.silva@empresa.com",
     "phone": "11987654321",
     "sector": "Tecnologia e Software",

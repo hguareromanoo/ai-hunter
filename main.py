@@ -30,6 +30,7 @@ app.add_middleware(
 )
 
 # --- Events ---
+
 @app.on_event("startup")
 async def startup_event():
     """
@@ -66,7 +67,7 @@ async def run_full_diagnostic_flow(form_data: LeadProfileInput):
         # 1. Run AI analysis and scoring (independente do DB)
         radar_scores, final_score = calculate_scores(form_data)
         logger.info(f"📊 Scores calculados - Final: {final_score}")
-        logger.info(f"📊 Scores radar: {radar_scores.dict()}")
+        logger.info(f"📊 Scores radar: {radar_scores}")
         
         # 2. Generate opportunities
         try:
@@ -108,7 +109,7 @@ async def run_full_diagnostic_flow(form_data: LeadProfileInput):
         # 3. Generate introduction - CORRIGIDO
         try:
             logger.info("🔍 Gerando introdução de pesquisa de mercado...")
-            introduction_result = await researchAgent.run(deps=form_data)
+            introduction_result = await researchAgent.run("Faça uma introdução para o relatorio com um panorama da IA para empresas como essa", deps=form_data)
             introduction_output = introduction_result.output if introduction_result and introduction_result.output else None
             
             if not introduction_output:
@@ -145,23 +146,33 @@ async def run_full_diagnostic_flow(form_data: LeadProfileInput):
         else:
             logger.warning("⚠️  Executando sem salvar no banco de dados")
 
-        # 6. Render HTML report - DADOS CORRETOS PARA O TEMPLATE
-        template_data = report_data.dict()
+        # 6. Render HTML report - DADOS CORRETOS PARA O TEMPLATE - CORRIGIDO
+        try:
+            template_data = report_data.dict()
+            logger.info(f"🔍 DEBUG - Keys disponíveis em template_data: {list(template_data.keys())}")
+            logger.info(f"🔍 DEBUG - template_data completo: {template_data}")
+        except Exception as dict_error:
+            logger.error(f"❌ Erro ao converter report_data para dict: {dict_error}")
+            # Fallback manual
+            template_data = {}
         
-        # Garantir que os dados estão na estrutura correta para o template
+        # Garantir que os dados estão na estrutura correta para o template - PROTEÇÃO CONTRA KeyError
         template_data_fixed = {
-            "empresa": template_data["empresa"],
-            "introduction": template_data["introduction"],
-            "scores_radar": template_data["scores_radar"],
-            "score_final": template_data["score_final"],  # CRÍTICO: isso estava faltando
-            "relatorio_oportunidades": template_data["relatorio_oportunidades"],
-            "relatorio_riscos": template_data["relatorio_riscos"],
+            "empresa": template_data.get("empresa", {"nome": form_data.name or "Sua Empresa"}),
+            "introduction": template_data.get("introduction", introduction_output),  # USAR A VARIÁVEL DIRETA
+            "scores_radar": template_data.get("scores_radar", radar_scores.dict()),  # USAR A VARIÁVEL DIRETA
+            "score_final": template_data.get("score_final", final_score),  # USAR A VARIÁVEL DIRETA
+            "relatorio_oportunidades": template_data.get("relatorio_oportunidades", []),
+            "relatorio_riscos": template_data.get("relatorio_riscos", []),
             "data_geracao": None,  # Será preenchido pelo render_report
             "ano_atual": None      # Será preenchido pelo render_report
         }
         
-        logger.info(f"📊 Dados para template: score_final = {template_data_fixed['score_final']}")
-        logger.info(f"📊 Radar scores: {template_data_fixed['scores_radar']}")
+        logger.info(f"📊 Dados finais para template:")
+        logger.info(f"   - score_final: {template_data_fixed['score_final']}")
+        logger.info(f"   - introduction (100 chars): {str(template_data_fixed['introduction'])[:100]}...")
+        logger.info(f"   - scores_radar keys: {list(template_data_fixed['scores_radar'].keys()) if isinstance(template_data_fixed['scores_radar'], dict) else 'NOT_DICT'}")
+        logger.info(f"   - oportunidades count: {len(template_data_fixed['relatorio_oportunidades'])}")
         
         html_content = renderizar_relatorio(template_data_fixed)
         logger.info("✅ Relatório HTML gerado com sucesso")
@@ -225,8 +236,8 @@ async def save_to_database(form_data: LeadProfileInput, report_data: FinalReport
                     form_data.p9_urgency,
                     'COMPLETED',  # status
                     report_data.score_final,
-                    json.dumps(report_data.scores_radar.dict()),
-                    json.dumps(report_data.dict())
+                    json.dumps(report_data.scores_radar),
+                    json.dumps(report_data)
                 )
                 logger.info(f"✅ Dados salvos no banco com ID: {lead_id}")
         except Exception as e:

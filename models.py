@@ -2,8 +2,11 @@ from pydantic_ai import Agent
 from schemas import LeadProfileInput, OpportunitiesOutput, Scores
 from dotenv import load_dotenv
 import json
-
+import logging
 load_dotenv()
+
+logging.basicConfig
+logger=logging.getLogger(__name__)
 
 # This would typically be in a separate file, but including here for simplicity
 # In a real app, load this from a JSON or config file.
@@ -52,52 +55,86 @@ ALL_QUESTIONS_DATA = {
     }
 }
 
-def calculate_scores(form_data: LeadProfileInput) -> (Scores, float):
+def calculate_scores(form_data: LeadProfileInput) -> tuple[dict, float]:
     """
-    Calculates the radar scores and the final score based on the new points system.
+    Calcula scores baseado nos dados do formulário LeadProfileInput
+    Retorna tuple com (radar_scores, final_score)
     """
-    # Helper to get points from the raw text answers
-    def get_points(question_id: str, answer_text: str) -> float:
-        if not answer_text:
-            return 0.0
-        # Find the key that is a substring of the answer
-        for key, points in ALL_QUESTIONS_DATA.get(question_id, {}).items():
-            if key in answer_text:
-                return float(points)
-        return 0.0
-
-    # Calculate individual dimension scores (normalized to 0-10)
-    poder_de_decisao = get_points("role", form_data.p3_role) * (10/3)
-    maturidade_digital = get_points("maturity", form_data.p7_digital_maturity) * (10/2)
-    dor = get_points("pain", form_data.p4_main_pain) * (10/2)
-    poder_investimento = get_points("investment", form_data.p8_investment) * (10/3)
-    urgencia = get_points("urgency", form_data.p9_urgency) * (10/2)
-
-    scores = Scores(
-        poder_de_decisao=round(poder_de_decisao, 1),
-        cultura_e_talentos=round(maturidade_digital, 1),
-        processos_e_automacao=round(dor, 1),
-        inovacao_de_produtos=round(poder_investimento, 1),
-        inteligencia_de_mercado=round(urgencia, 1)
-    )
-
-    # Calculate final weighted score (0-10)
-    # Weights: role(0.2), pain(0.25), quantify(0.1), maturity(0.15), investment(0.2), urgency(0.1)
-    final_score = (
-        get_points("role", form_data.p3_role) * 0.2 +
-        get_points("pain", form_data.p4_main_pain) * 0.25 +
-        get_points("quantifyPain", form_data.p6_pain_quant) * 0.1 +
-        get_points("maturity", form_data.p7_digital_maturity) * 0.15 +
-        get_points("investment", form_data.p8_investment) * 0.2 +
-        get_points("urgency", form_data.p9_urgency) * 0.1
-    )
+    scores = {
+        'automation_readiness': 0,
+        'digital_maturity': 0,
+        'investment_capacity': 0,
+        'urgency_level': 0,
+        'pain_intensity': 0
+    }
     
-    # Normalize final score to a 0-10 scale
-    # Max possible points: (3*0.2)+(2*0.25)+(3*0.1)+(2*0.15)+(3*0.2)+(2*0.1) = 0.6+0.5+0.3+0.3+0.6+0.2 = 2.5
-    max_score = 2.5
-    normalized_score = (final_score / max_score) * 10
+    # Score para Digital Maturity
+    digital_maturity_map = {
+        "Apenas ferramentas básicas (e-mail, planilhas)": 20,
+        "Usamos ferramentas básicas de produtividade (CRM simples, e-mail)": 40,
+        "Temos algumas soluções digitais integradas": 60,
+        "Somos uma empresa digitalmente madura": 80,
+        "Somos líderes em transformação digital": 100
+    }
+    scores['digital_maturity'] = digital_maturity_map.get(form_data.p7_digital_maturity, 40)
     
-    return scores, round(normalized_score, 1)
+    # Score para Investment Capacity
+    investment_map = {
+        "Até R$ 10.000 (investimento pontual)": 20,
+        "R$ 10.001 - R$ 30.000 (projeto piloto)": 40,
+        "R$ 30.001 - R$ 100.000 (investimento estruturado)": 60,
+        "R$ 100.001 - R$ 500.000 (transformação significativa)": 80,
+        "Acima de R$ 500.000 (transformação completa)": 100
+    }
+    scores['investment_capacity'] = investment_map.get(form_data.p8_investment, 40)
+    
+    # Score para Urgency Level
+    urgency_map = {
+        "Baixa - É algo para considerar no futuro": 20,
+        "Média - Gostaríamos de implementar nos próximos 6 meses": 60,
+        "Alta - Precisamos de uma solução nos próximos 3 meses": 80,
+        "Crítica - Precisamos resolver isso imediatamente": 100
+    }
+    scores['urgency_level'] = urgency_map.get(form_data.p9_urgency, 60)
+    
+    # Score para Pain Intensity baseado na quantificação
+    pain_text = form_data.p6_pain_quant.lower() if form_data.p6_pain_quant else ""
+    if 'critico' in pain_text or 'urgente' in pain_text or 'prejuizo' in pain_text:
+        scores['pain_intensity'] = 100
+    elif 'importante' in pain_text or 'significativo' in pain_text or 'horas' in pain_text:
+        scores['pain_intensity'] = 80
+    elif 'medio' in pain_text or 'moderado' in pain_text:
+        scores['pain_intensity'] = 60
+    elif 'baixo' in pain_text or 'pequeno' in pain_text:
+        scores['pain_intensity'] = 40
+    else:
+        scores['pain_intensity'] = 70  # valor padrão
+    
+    # Score para Automation Readiness baseado na área crítica e setor
+    automation_base = 50
+    
+    # Ajuste por setor
+    sector = form_data.p1_sector.lower() if form_data.p1_sector else ""
+    if 'tecnologia' in sector:
+        automation_base += 30
+    elif 'financeiro' in sector or 'consultoria' in sector:
+        automation_base += 20
+    elif 'varejo' in sector or 'servicos' in sector:
+        automation_base += 10
+    
+    # Ajuste por área crítica
+    critical_area = form_data.p5_critical_area.lower() if form_data.p5_critical_area else ""
+    if 'vendas' in critical_area or 'marketing' in critical_area:
+        automation_base += 20
+    elif 'operacoes' in critical_area or 'atendimento' in critical_area:
+        automation_base += 15
+    
+    scores['automation_readiness'] = min(100, automation_base)
+    
+    # Calcula score final (média dos scores)
+    final_score = sum(scores.values()) / len(scores)
+    scores_ = Scores(**scores)
+    return scores_, final_score/10
 
 
 researchAgent = Agent(
@@ -111,18 +148,19 @@ researchAgent = Agent(
                     " Use uma linguagem acessível e evite jargões técnicos desnecessários. " \
     )
 )
+
 @researchAgent.system_prompt
 async def add_forms_response(ctx):
-       form: LeadProfileInput = ctx.deps
-       context = "Faça uma pesquisa de mercado sobre IA para empresas desse perfil:\n"
-       context += f"- Setor: {form.p1_sector}\n"
-       context += f"- Porte: {form.p2_company_size}\n"
-       context += f"- Gargalo Principal: {form.p4_main_pain}\n"
-       context += f"- Área Crítica: {form.p5_critical_area}\n"
-       context += f"- Maturidade Digital: {form.p7_digital_maturity}\n"
-       context += f"- Capacidade de Investimento: {form.p8_investment}\n"
-       context += "\nUse estas informações para gerar 3 oportunidades de IA realistas e impactantes."
-       return context
+    form: LeadProfileInput = ctx.deps
+    context = "Faça uma pesquisa de mercado sobre IA para empresas desse perfil:\n"
+    context += f"- Setor: {form.p1_sector}\n"
+    context += f"- Porte: {form.p2_company_size}\n"
+    context += f"- Gargalo Principal: {form.p4_main_pain}\n"
+    context += f"- Área Crítica: {form.p5_critical_area}\n"
+    context += f"- Maturidade Digital: {form.p7_digital_maturity}\n"
+    context += f"- Capacidade de Investimento: {form.p8_investment}\n"
+    context += "\nGere uma análise de mercado de IA específica para este perfil empresarial em 2 parágrafos, máximo 400 caracteres."
+    return context
 
 
 

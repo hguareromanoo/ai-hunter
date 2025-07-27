@@ -42,11 +42,11 @@ class Scores(BaseModel):
     """
     Represents the calculated scores for different dimensions.
     """
-    poder_de_decisao: float
-    cultura_e_talentos: float
-    processos_e_automacao: float
-    inovacao_de_produtos: float
-    inteligencia_de_mercado: float
+    automation_readiness: float
+    urgency_level: float
+    investment_capacity: float
+    digital_maturity: float
+    pain_intensity: float
 
 class FinalReportData(BaseModel):
     """

@@ -220,20 +220,20 @@
             type: 'radar',
             data: {
                 labels: [
-                    'Poder de Decisão',
-                    'Maturidade Digital',
-                    'Dor',
-                    'Poder de Investimento',
-                    'Urgência'
+                    'Prontidão para Automação',
+                    'Maturidade Digital', 
+                    'Capacidade de Investimento',
+                    'Nível de Urgência',
+                    'Intensidade da Dor'
                 ],
                 datasets: [{
                     label: 'Seu Score',
                     data: [
-                        {{ scores_radar.poder_de_decisao }},
-                        {{ scores_radar.cultura_e_talentos }},
-                        {{ scores_radar.processos_e_automacao }},
-                        {{ scores_radar.inovacao_de_produtos }},
-                        {{ scores_radar.inteligencia_de_mercado }}
+                        {{ scores_radar.automation_readiness | default(0) }},
+                        {{ scores_radar.digital_maturity | default(0) }},
+                        {{ scores_radar.investment_capacity | default(0) }},
+                        {{ scores_radar.urgency_level | default(0) }},
+                        {{ scores_radar.pain_intensity | default(0) }}
                     ],
                     fill: true,
                     backgroundColor: 'hsla(var(--primary-hsl), 0.2)',
@@ -256,7 +256,7 @@
                             display: false
                         },
                         suggestedMin: 0,
-                        suggestedMax: 10,
+                        suggestedMax: 100,
                         pointLabels: {
                             font: {
                                 size: 12,
@@ -273,6 +273,3 @@
             }
         });
     </script>
-
-</body>
-</html>
