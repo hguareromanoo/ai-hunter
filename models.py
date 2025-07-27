@@ -68,17 +68,17 @@ def calculate_scores(form_data: LeadProfileInput) -> (Scores, float):
 
     # Calculate individual dimension scores (normalized to 0-10)
     poder_de_decisao = get_points("role", form_data.p3_role) * (10/3)
-    cultura_e_talentos = get_points("maturity", form_data.p7_digital_maturity) * (10/2)
-    processos_e_automacao = get_points("pain", form_data.p4_main_pain) * (10/2)
-    inovacao_de_produtos = get_points("investment", form_data.p8_investment) * (10/3)
-    inteligencia_de_mercado = get_points("urgency", form_data.p9_urgency) * (10/2)
+    maturidade_digital = get_points("maturity", form_data.p7_digital_maturity) * (10/2)
+    dor = get_points("pain", form_data.p4_main_pain) * (10/2)
+    poder_investimento = get_points("investment", form_data.p8_investment) * (10/3)
+    urgencia = get_points("urgency", form_data.p9_urgency) * (10/2)
 
     scores = Scores(
         poder_de_decisao=round(poder_de_decisao, 1),
-        cultura_e_talentos=round(cultura_e_talentos, 1),
-        processos_e_automacao=round(processos_e_automacao, 1),
-        inovacao_de_produtos=round(inovacao_de_produtos, 1),
-        inteligencia_de_mercado=round(inteligencia_de_mercado, 1)
+        cultura_e_talentos=round(maturidade_digital, 1),
+        processos_e_automacao=round(dor, 1),
+        inovacao_de_produtos=round(poder_investimento, 1),
+        inteligencia_de_mercado=round(urgencia, 1)
     )
 
     # Calculate final weighted score (0-10)
