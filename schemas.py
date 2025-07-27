@@ -36,7 +36,7 @@ class Opportunity(BaseModel):
     case: str = Field(..., description="A success case for a similar company.")
 
 class OpportunitiesOutput(BaseModel):
-    opportunities: List[Opportunity]
+    opportunities: List[Opportunity] = Field(..., description="TOP 3 OPPORTUNITIES.")
 
 class Scores(BaseModel):
     """

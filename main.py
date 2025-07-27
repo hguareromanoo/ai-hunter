@@ -66,22 +66,62 @@ async def run_full_diagnostic_flow(form_data: LeadProfileInput):
         # 1. Run AI analysis and scoring (independente do DB)
         radar_scores, final_score = calculate_scores(form_data)
         logger.info(f"📊 Scores calculados - Final: {final_score}")
+        logger.info(f"📊 Scores radar: {radar_scores.dict()}")
         
-        opportunities_result = await opportunityTracker.run(deps=form_data)
-        if not opportunities_result or not opportunities_result.output:
-            raise HTTPException(status_code=500, detail="Failed to generate opportunities.")
+        # 2. Generate opportunities
+        try:
+            logger.info("💡 Gerando oportunidades...")
+            opportunities_result = await opportunityTracker.run(deps=form_data)
+            if not opportunities_result or not opportunities_result.output:
+                raise Exception("OpportunityTracker retornou resultado vazio")
+            
+            opportunities = opportunities_result.output.opportunities
+            logger.info(f"💡 Geradas {len(opportunities)} oportunidades")
+        except Exception as opp_error:
+            logger.error(f"❌ Erro ao gerar oportunidades: {opp_error}")
+            # Fallback com oportunidades padrão
+            from schemas import Opportunity
+            opportunities = [
+                Opportunity(
+                    titulo="Automação de Processos Básicos",
+                    descricao=f"Implementar soluções de automação para reduzir tarefas manuais na área de {form_data.p5_critical_area}",
+                    roi_estimado="150-200%",
+                    timeline="3-6 meses",
+                    investimento="R$ 25.000 - R$ 50.000"
+                ),
+                Opportunity(
+                    titulo="Análise de Dados Inteligente",
+                    descricao="Desenvolver dashboards e relatórios automatizados para melhorar a tomada de decisão",
+                    roi_estimado="120-180%",
+                    timeline="2-4 meses", 
+                    investimento="R$ 15.000 - R$ 35.000"
+                ),
+                Opportunity(
+                    titulo="Chatbot de Atendimento",
+                    descricao="Implementar assistente virtual para automatizar o atendimento inicial aos clientes",
+                    roi_estimado="100-150%",
+                    timeline="1-3 meses",
+                    investimento="R$ 10.000 - R$ 25.000"
+                )
+            ]
         
-        opportunities = opportunities_result.output.opportunities
-        logger.info(f"💡 Geradas {len(opportunities)} oportunidades")
+        # 3. Generate introduction - CORRIGIDO
+        try:
+            logger.info("🔍 Gerando introdução de pesquisa de mercado...")
+            introduction_result = await researchAgent.run(deps=form_data)
+            introduction_output = introduction_result.output if introduction_result and introduction_result.output else None
+            
+            if not introduction_output:
+                raise Exception("ResearchAgent retornou resultado vazio")
+                
+            logger.info("✅ Introdução gerada com sucesso")
+            logger.info(f"Introdução (primeiros 100 chars): {introduction_output[:100]}...")
+        except Exception as intro_error:
+            logger.error(f"❌ Erro ao gerar introdução: {intro_error}")
+            # Fallback com introdução personalizada
+            introduction_output = f"O setor de {form_data.p1_sector} está passando por uma transformação digital acelerada, especialmente para empresas de {form_data.p2_company_size}. A implementação de inteligência artificial neste segmento apresenta oportunidades significativas de otimização, redução de custos e crescimento sustentável. Com o gargalo atual em {form_data.p4_main_pain}, há potencial imediato para soluções que automatizem processos e melhorem a eficiência operacional."
         
-        # Corrigido o f-string para funcionar corretamente
-        introduction_result = await researchAgent.run(
-            f"Faça a pesquisa de mercado para o setor {form_data.p1_sector} de 400 caracteres em dois parágrafos",
-            deps=form_data
-        )
-        introduction_output = introduction_result.output if introduction_result and introduction_result.output else "Introdução não disponível."
-        
-        # 2. Consolidate data for the report
+        # 4. Consolidate data for the report - ESTRUTURA CORRIGIDA
         report_data = FinalReportData(
             empresa={"nome": form_data.name or "Sua Empresa"},
             scores_radar=radar_scores,
@@ -94,24 +134,42 @@ async def run_full_diagnostic_flow(form_data: LeadProfileInput):
             ]
         )
 
-        # 3. Save to database (se disponível)
+        # 5. Save to database (se disponível)
         if db_manager.is_connected():
             try:
                 await save_to_database(form_data, report_data)
+                logger.info("✅ Dados salvos no banco com sucesso")
             except Exception as db_error:
                 logger.warning(f"⚠️  Erro ao salvar no banco: {db_error}")
                 # Não falha a API se não conseguir salvar
         else:
             logger.warning("⚠️  Executando sem salvar no banco de dados")
 
-        # 4. Render HTML report
-        html_content = renderizar_relatorio(report_data.dict())
+        # 6. Render HTML report - DADOS CORRETOS PARA O TEMPLATE
+        template_data = report_data.dict()
+        
+        # Garantir que os dados estão na estrutura correta para o template
+        template_data_fixed = {
+            "empresa": template_data["empresa"],
+            "introduction": template_data["introduction"],
+            "scores_radar": template_data["scores_radar"],
+            "score_final": template_data["score_final"],  # CRÍTICO: isso estava faltando
+            "relatorio_oportunidades": template_data["relatorio_oportunidades"],
+            "relatorio_riscos": template_data["relatorio_riscos"],
+            "data_geracao": None,  # Será preenchido pelo render_report
+            "ano_atual": None      # Será preenchido pelo render_report
+        }
+        
+        logger.info(f"📊 Dados para template: score_final = {template_data_fixed['score_final']}")
+        logger.info(f"📊 Radar scores: {template_data_fixed['scores_radar']}")
+        
+        html_content = renderizar_relatorio(template_data_fixed)
         logger.info("✅ Relatório HTML gerado com sucesso")
         
-        # 5. Convert form_data to dict for webhook
+        # 7. Convert form_data to dict for webhook
         form_data_dict = form_data.model_dump(by_alias=True)
         
-        # 6. Send to webhook in background (não bloqueia a resposta)
+        # 8. Send to webhook in background (não bloqueia a resposta)
         logger.info("🔄 Enviando dados para webhook em background...")
         
         # Usar try/except para não quebrar a API se o webhook falhar
@@ -122,7 +180,7 @@ async def run_full_diagnostic_flow(form_data: LeadProfileInput):
         except Exception as webhook_error:
             logger.warning(f"⚠️  Erro ao iniciar task do webhook: {webhook_error}")
 
-        # 7. Return HTML immediately
+        # 9. Return HTML immediately
         return HTMLResponse(content=html_content, status_code=200)
     
 
@@ -237,3 +295,7 @@ async def database_info():
             }
     except Exception as e:
         return {"status": "error", "message": str(e)}
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
