@@ -54,121 +54,82 @@ ALL_QUESTIONS_DATA = {
     }
 }
 
-def calculate_scores(form_data: LeadProfileInput) -> tuple[Scores, float]:
+def calculate_scores(form_data: dict) -> dict:
     """
-    Calculates the radar scores and the final score based on the new points system.
+    Calcula scores baseado nos dados do formulário usando mapeamento direto
     """
-    logger.info("🔍 INICIANDO CÁLCULO DE SCORES")
-    logger.info(f"📋 Dados recebidos: {form_data.dict()}")
+    scores = {
+        'automation_readiness': 0,
+        'digital_maturity': 0,
+        'investment_capacity': 0,
+        'urgency_level': 0,
+        'pain_intensity': 0
+    }
     
-    # Helper to get points from the raw text answers
-    def get_points(question_id: str, answer_text: str) -> float:
-        logger.info(f"🔎 Processando: {question_id} = '{answer_text}'")
-        
-        if not answer_text:
-            logger.warning(f"⚠️  {question_id}: Resposta vazia")
-            return 0.0
-        
-        question_data = ALL_QUESTIONS_DATA.get(question_id, {})
-        if not question_data:
-            logger.error(f"❌ {question_id}: Não encontrado em ALL_QUESTIONS_DATA")
-            return 0.0
-        
-        # Find the key that is a substring of the answer (ou vice-versa)
-        for key, points in question_data.items():
-            # Tenta match exato primeiro
-            if key == answer_text:
-                logger.info(f"✅ {question_id}: Match exato '{key}' = {points} pontos")
-                return float(points)
-            # Depois tenta substring (mais flexível)
-            if key in answer_text or answer_text in key:
-                logger.info(f"✅ {question_id}: Match parcial '{key}' em '{answer_text}' = {points} pontos")
-                return float(points)
-        
-        # Log todas as opções disponíveis se não encontrou match
-        logger.error(f"❌ {question_id}: Nenhum match encontrado para '{answer_text}'")
-        logger.error(f"   Opções disponíveis: {list(question_data.keys())}")
-        return 0.0
-
-    # Calculate individual dimension scores (normalized to 0-10)
-    logger.info("📊 Calculando scores individuais...")
+    # Score para Digital Maturity
+    digital_maturity_map = {
+        "Apenas ferramentas básicas (e-mail, planilhas)": 20,
+        "Usamos ferramentas básicas de produtividade (CRM simples, e-mail)": 40,
+        "Temos algumas soluções digitais integradas": 60,
+        "Somos uma empresa digitalmente madura": 80,
+        "Somos líderes em transformação digital": 100
+    }
+    scores['digital_maturity'] = digital_maturity_map.get(form_data.get('digital_maturity', ''), 40)
     
-    # Mapeamento correto das respostas para os IDs das perguntas
-    poder_decisao_raw = get_points("role", form_data.p3_role)
-    maturidade_digital_raw = get_points("maturity", form_data.p7_digital_maturity)
-    dor_raw = get_points("pain", form_data.p4_main_pain)
-    investimento_raw = get_points("investment", form_data.p8_investment)
-    urgencia_raw = get_points("urgency", form_data.p9_urgency)
+    # Score para Investment Capacity
+    investment_map = {
+        "Até R$ 10.000 (investimento pontual)": 20,
+        "R$ 10.001 - R$ 30.000 (projeto piloto)": 40,
+        "R$ 30.001 - R$ 100.000 (investimento estruturado)": 60,
+        "R$ 100.001 - R$ 500.000 (transformação significativa)": 80,
+        "Acima de R$ 500.000 (transformação completa)": 100
+    }
+    scores['investment_capacity'] = investment_map.get(form_data.get('investment_capacity', ''), 40)
     
-    logger.info(f"🎯 Pontos brutos:")
-    logger.info(f"   Poder de decisão: {poder_decisao_raw} (max: 3)")
-    logger.info(f"   Maturidade digital: {maturidade_digital_raw} (max: 2)")
-    logger.info(f"   Dor: {dor_raw} (max: 2)")
-    logger.info(f"   Investimento: {investimento_raw} (max: 3)")
-    logger.info(f"   Urgência: {urgencia_raw} (max: 2)")
+    # Score para Urgency Level
+    urgency_map = {
+        "Baixa - É algo para considerar no futuro": 20,
+        "Média - Gostaríamos de implementar nos próximos 6 meses": 60,
+        "Alta - Precisamos de uma solução nos próximos 3 meses": 80,
+        "Crítica - Precisamos resolver isso imediatamente": 100
+    }
+    scores['urgency_level'] = urgency_map.get(form_data.get('urgency', ''), 60)
     
-    # Normaliza para 0-10
-    poder_de_decisao = poder_decisao_raw * (10/3) if poder_decisao_raw > 0 else 0
-    maturidade_digital = maturidade_digital_raw * (10/2) if maturidade_digital_raw > 0 else 0
-    dor = dor_raw * (10/2) if dor_raw > 0 else 0
-    poder_investimento = investimento_raw * (10/3) if investimento_raw > 0 else 0
-    urgencia = urgencia_raw * (10/2) if urgencia_raw > 0 else 0
-
-    logger.info(f"📈 Scores normalizados (0-10):")
-    logger.info(f"   Poder de decisão: {poder_de_decisao}")
-    logger.info(f"   Maturidade digital: {maturidade_digital}")
-    logger.info(f"   Dor: {dor}")
-    logger.info(f"   Poder investimento: {poder_investimento}")
-    logger.info(f"   Urgência: {urgencia}")
-
-    scores = Scores(
-        poder_de_decisao=round(poder_de_decisao, 1),
-        cultura_e_talentos=round(maturidade_digital, 1),
-        processos_e_automacao=round(dor, 1),
-        inovacao_de_produtos=round(poder_investimento, 1),
-        inteligencia_de_mercado=round(urgencia, 1)
-    )
+    # Score para Pain Intensity baseado na quantificação
+    pain_text = form_data.get('pain_quantification', '').lower()
+    if 'critico' in pain_text or 'urgente' in pain_text or 'prejuizo' in pain_text:
+        scores['pain_intensity'] = 100
+    elif 'importante' in pain_text or 'significativo' in pain_text or 'horas' in pain_text:
+        scores['pain_intensity'] = 80
+    elif 'medio' in pain_text or 'moderado' in pain_text:
+        scores['pain_intensity'] = 60
+    elif 'baixo' in pain_text or 'pequeno' in pain_text:
+        scores['pain_intensity'] = 40
+    else:
+        scores['pain_intensity'] = 70  # valor padrão
     
-    logger.info(f"📋 Scores finais: {scores.dict()}")
-
-    # Calculate final weighted score (0-10)
-    # Weights: role(0.2), pain(0.25), quantify(0.1), maturity(0.15), investment(0.2), urgency(0.1)
+    # Score para Automation Readiness baseado na área crítica e setor
+    automation_base = 50
     
-    # Para quantify, precisamos processar p6_pain_quant
-    quantify_raw = get_points("quantifyPain", form_data.p6_pain_quant or "")
+    # Ajuste por setor
+    sector = form_data.get('sector', '')
+    if 'tecnologia' in sector.lower():
+        automation_base += 30
+    elif 'financeiro' in sector.lower() or 'consultoria' in sector.lower():
+        automation_base += 20
+    elif 'varejo' in sector.lower() or 'servicos' in sector.lower():
+        automation_base += 10
     
-    logger.info(f"🔢 Calculando score final ponderado:")
-    logger.info(f"   Role ({form_data.p3_role}): {poder_decisao_raw} * 0.2")
-    logger.info(f"   Pain ({form_data.p4_main_pain}): {dor_raw} * 0.25")
-    logger.info(f"   Quantify ({form_data.p6_pain_quant}): {quantify_raw} * 0.1")
-    logger.info(f"   Maturity ({form_data.p7_digital_maturity}): {maturidade_digital_raw} * 0.15")
-    logger.info(f"   Investment ({form_data.p8_investment}): {investimento_raw} * 0.2")
-    logger.info(f"   Urgency ({form_data.p9_urgency}): {urgencia_raw} * 0.1")
+    # Ajuste por área crítica
+    critical_area = form_data.get('critical_area', '')
+    if 'vendas' in critical_area.lower() or 'marketing' in critical_area.lower():
+        automation_base += 20
+    elif 'operacoes' in critical_area.lower() or 'atendimento' in critical_area.lower():
+        automation_base += 15
     
-    final_score = (
-        poder_decisao_raw * 0.2 +
-        dor_raw * 0.25 +
-        quantify_raw * 0.1 +
-        maturidade_digital_raw * 0.15 +
-        investimento_raw * 0.2 +
-        urgencia_raw * 0.1
-    )
+    scores['automation_readiness'] = min(100, automation_base)
     
-    logger.info(f"🎯 Score ponderado bruto: {final_score}")
-    
-    # Normalize final score to a 0-10 scale
-    # Max possible points: (3*0.2)+(2*0.25)+(3*0.1)+(2*0.15)+(3*0.2)+(2*0.1) = 0.6+0.5+0.3+0.3+0.6+0.2 = 2.5
-    max_score = 2.5
-    normalized_score = (final_score / max_score) * 10
-    
-    logger.info(f"🎯 Score final normalizado: {normalized_score} (max possível: {max_score})")
-    
-    final_rounded = round(normalized_score, 1)
-    
-    logger.info("✅ CÁLCULO DE SCORES CONCLUÍDO")
-    logger.info(f"📊 Resultado final: Score = {final_rounded}, Radar = {scores.dict()}")
-    
-    return scores, final_rounded
+    return scores
 
 
 # Função de teste para debug
