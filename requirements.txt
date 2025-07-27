@@ -8,6 +8,6 @@ jinja2
 requests
 gunicorn==20.1.0
 werkzeug==2.0.3
-weasyprint==60.2
+
 asyncio
 logging
