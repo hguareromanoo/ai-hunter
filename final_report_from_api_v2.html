@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-al">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Relatório de Diagnóstico de IA - {{ empresa.nome }}</title>
+    <title>Relatório de Diagnóstico de IA - Maria Silva</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -67,19 +67,23 @@
             </div>
             <h1 class="text-4xl md:text-5xl font-bold">Diagnóstico de Maturidade em IA</h1>
             <h2 class="text-2xl md:text-3xl font-light mt-4 text-muted-foreground">Relatório Estratégico para</h2>
-            <p class="text-3xl md:text-4xl font-bold mt-2 text-primary">{{ empresa.nome }}</p>
-            <p class="mt-8 text-sm text-muted-foreground">Gerado em: {{ data_geracao }}</p>
+            <p class="text-3xl md:text-4xl font-bold mt-2 text-primary">Maria Silva</p>
+            <p class="mt-8 text-sm text-muted-foreground">Gerado em: 27/07/2025</p>
         </section>
 
         <div class="page-break"></div>
 
-       <!-- Seção 2: Introdução (Panorama do Setor) -->
+        <!-- Seção 2: Introdução (Panorama do Setor) -->
         <section id="introducao" class="py-12 px-6">
-        <h2 class="text-3xl font-bold border-b-2 border-primary pb-2 mb-6">1. Panorama do Setor e a Revolução da IA</h2>
-        <div class="text-lg leading-relaxed">
-            {{ introduction|safe }}
-        </div>
-    </section>
+            <h2 class="text-3xl font-bold border-b-2 border-primary pb-2 mb-6">1. Panorama do Setor e a Revolução da IA</h2>
+            <p class="text-lg leading-relaxed mb-4">
+                Vivemos um momento de transformação sem precedentes. A Inteligência Artificial deixou de ser uma promessa futura para se tornar a principal força motriz de inovação e eficiência no cenário de negócios atual. Empresas que integram a IA em seus processos não estão apenas otimizando operações, mas redefinindo seus mercados.
+            </p>
+            <p class="text-lg leading-relaxed">
+                Este relatório oferece um diagnóstico claro da maturidade da <strong>Maria Silva</strong> em relação à IA. Ele foi projetado para fornecer insights práticos e um roteiro estratégico, permitindo que sua empresa não apenas se adapte, mas lidere na nova economia digital.
+            </p>
+        </section>
+
         <div class="page-break"></div>
 
         <!-- Seção 3: Dashboard do Diagnóstico -->
@@ -91,10 +95,10 @@
                     <div class="relative w-48 h-48 mx-auto">
                         <svg class="w-full h-full" viewBox="0 0 36 36">
                             <path class="text-muted" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3.8"></path>
-                            <path class="text-primary" stroke-dasharray="{{ score_final * 10 }}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3.8" stroke-linecap="round"></path>
+                            <path class="text-primary" stroke-dasharray="47.0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3.8" stroke-linecap="round"></path>
                         </svg>
                         <div class="absolute inset-0 flex items-center justify-center">
-                            <span class="text-5xl font-bold text-foreground">{{ "%.1f"|format(score_final) }}</span>
+                            <span class="text-5xl font-bold text-foreground">4.7</span>
                         </div>
                     </div>
                     <p class="text-lg mt-4 text-muted-foreground">de 10.0</p>
@@ -112,18 +116,16 @@
         <section id="oportunidades" class="py-12 px-6 bg-gray-50">
             <h2 class="text-3xl font-bold border-b-2 border-primary pb-2 mb-8">3. Suas 3 Maiores Oportunidades</h2>
             <div class="space-y-8">
-                {% for oportunidade in relatorio_oportunidades %}
+                
                 <div class="bg-white border border-border rounded-lg shadow-md overflow-hidden">
                     <div class="p-6">
                         <div class="flex justify-between items-start mb-4">
-                            <h3 class="text-2xl font-bold text-primary">{{ oportunidade.titulo }}</h3>
+                            <h3 class="text-2xl font-bold text-primary">Automação de Relatórios Financeiros</h3>
                             <span class="
-                                {% if oportunidade.priority == 'alta' %} bg-red-500
-                                {% elif oportunidade.priority == 'media' %} bg-yellow-500
-                                {% else %} bg-green-500
-                                {% endif %}
+                                 bg-red-500
+                                
                                 text-white text-xs font-bold uppercase px-3 py-1 rounded-full">
-                                Prioridade {{ oportunidade.priority }}
+                                Prioridade alta
                             </span>
                         </div>
                         
@@ -131,21 +133,83 @@
                             <!-- Box da Aplicação -->
                             <div class="bg-gray-100 p-4 rounded-lg">
                                 <h4 class="font-bold text-lg mb-2 text-gray-800">Aplicação de IA</h4>
-                                <p class="text-gray-600">{{ oportunidade.description }}</p>
+                                <p class="text-gray-600">Implementar uma solução de IA que extrai dados de diferentes sistemas e planilhas, consolidando e gerando relatórios financeiros automaticamente. Isso reduz a dependência de processos manuais e permite que a equipe financeira se concentre em atividades mais estratégicas.</p>
                                 <div class="mt-4">
                                     <p class="font-bold text-gray-800">Retorno Estimado (ROI):</p>
-                                    <p class="text-green-600 font-bold text-lg">{{ oportunidade.roi }}</p>
+                                    <p class="text-green-600 font-bold text-lg">Redução de até 50% do tempo gasto na geração de relatórios mensais, permitindo maior foco em análise estratégica.</p>
                                 </div>
                             </div>
                             <!-- Box do Case -->
                             <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-lg">
                                 <h4 class="font-bold text-lg mb-2 text-blue-800">Caso de Sucesso</h4>
-                                <p class="text-blue-700 italic">"{{ oportunidade.case }}"</p>
+                                <p class="text-blue-700 italic">"Case: Automação de Relatórios Financeiros - Implementação de IA para relatórios automatizados, gerando uma significativa economia de tempo e reduzindo erros manuais."</p>
                             </div>
                         </div>
                     </div>
                 </div>
-                {% endfor %}
+                
+                <div class="bg-white border border-border rounded-lg shadow-md overflow-hidden">
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-2xl font-bold text-primary">RPA com IA para Automação de Processos de Cobrança</h3>
+                            <span class="
+                                 bg-yellow-500
+                                
+                                text-white text-xs font-bold uppercase px-3 py-1 rounded-full">
+                                Prioridade media
+                            </span>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                            <!-- Box da Aplicação -->
+                            <div class="bg-gray-100 p-4 rounded-lg">
+                                <h4 class="font-bold text-lg mb-2 text-gray-800">Aplicação de IA</h4>
+                                <p class="text-gray-600">Implementar RPA para automatizar as etapas repetitivas do processo de cobrança, como envio de lembretes de pagamento e atualizações de status, agilizando operações e reduzindo erros.</p>
+                                <div class="mt-4">
+                                    <p class="font-bold text-gray-800">Retorno Estimado (ROI):</p>
+                                    <p class="text-green-600 font-bold text-lg">Redução de 30% nos custos operacionais relacionados à cobrança, com aumento na acurácia e eficiência.</p>
+                                </div>
+                            </div>
+                            <!-- Box do Case -->
+                            <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-lg">
+                                <h4 class="font-bold text-lg mb-2 text-blue-800">Caso de Sucesso</h4>
+                                <p class="text-blue-700 italic">"Case: Base39 - RPA com IA para reduzir custos e acelerar processos financeiros em empresas de porte similar."</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white border border-border rounded-lg shadow-md overflow-hidden">
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-2xl font-bold text-primary">Análise de Contratos e Compliance</h3>
+                            <span class="
+                                 bg-yellow-500
+                                
+                                text-white text-xs font-bold uppercase px-3 py-1 rounded-full">
+                                Prioridade media
+                            </span>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                            <!-- Box da Aplicação -->
+                            <div class="bg-gray-100 p-4 rounded-lg">
+                                <h4 class="font-bold text-lg mb-2 text-gray-800">Aplicação de IA</h4>
+                                <p class="text-gray-600">Desenvolver uma ferramenta de IA que possa realizar a análise automática de contratos e documentos financeiros, identificando inconformidades e acelerando o processo de revisão.</p>
+                                <div class="mt-4">
+                                    <p class="font-bold text-gray-800">Retorno Estimado (ROI):</p>
+                                    <p class="text-green-600 font-bold text-lg">Aceleração da revisão de contratos em até 60% e redução de riscos de compliance.</p>
+                                </div>
+                            </div>
+                            <!-- Box do Case -->
+                            <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-lg">
+                                <h4 class="font-bold text-lg mb-2 text-blue-800">Caso de Sucesso</h4>
+                                <p class="text-blue-700 italic">"Case: Análise de Contratos e Compliance - Redução do tempo de revisão e aumento na precisão através de IA."</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
             </div>
         </section>
 
@@ -153,12 +217,17 @@
         <section id="evitar" class="py-12 px-6">
             <h2 class="text-3xl font-bold border-b-2 border-destructive pb-2 mb-8">4. O Que Evitar Agora</h2>
             <div class="space-y-6">
-                {% for risco in relatorio_riscos %}
+                
                 <div class="bg-destructive/10 border border-destructive/20 rounded-lg p-6">
-                    <h3 class="text-xl font-bold text-destructive mb-2">{{ risco.titulo }}</h3>
-                    <p class="text-muted-foreground">{{ risco.descricao }}</p>
+                    <h3 class="text-xl font-bold text-destructive mb-2">Segurança de Dados</h3>
+                    <p class="text-muted-foreground">A implementação de IA exige atenção redobrada à segurança dos dados e conformidade com a LGPD.</p>
                 </div>
-                {% endfor %}
+                
+                <div class="bg-destructive/10 border border-destructive/20 rounded-lg p-6">
+                    <h3 class="text-xl font-bold text-destructive mb-2">Gestão da Mudança</h3>
+                    <p class="text-muted-foreground">A adoção de novas tecnologias requer uma comunicação clara e treinamento para garantir a adesão da equipe.</p>
+                </div>
+                
             </div>
         </section>
 
@@ -170,36 +239,13 @@
             <p class="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">Com base no seu score de maturidade, este é o programa que recomendamos para acelerar sua jornada com IA.</p>
 
             <div class="max-w-2xl mx-auto bg-card text-card-foreground rounded-lg shadow-2xl p-8">
-                {% if score_final >= 8.5 %}
-                <!-- Produto: Mentor[IA] -->
-                <h3 class="text-3xl font-extrabold text-primary">Mentor[IA]</h3>
-                <p class="text-lg mt-4 mb-6 text-muted-foreground">Uma parceria estratégica e pessoal para líderes que buscam não apenas adotar, mas definir o futuro da IA em seu setor. Foco em implementação de alto nível, inovação disruptiva e construção de um legado tecnológico.</p>
-                <a href="#" class="inline-block bg-primary text-primary-foreground font-bold py-3 px-8 rounded-md hover:bg-primary/90 transition-colors">Agendar Sessão Estratégica</a>
-
-                {% elif score_final >= 7.5 and score_final < 8.5 %}
-                <!-- Produto: Founders Lendários -->
-                <h3 class="text-3xl font-extrabold text-secondary">Founders Lendários</h3>
-                <p class="text-lg mt-4 mb-6 text-muted-foreground">Acesso a um grupo de elite de fundadores e CEOs. O foco é em networking de alto impacto, masterminds estratégicos e crescimento acelerado através da troca de experiências com os melhores do mercado.</p>
-                <a href="#" class="inline-block bg-secondary text-secondary-foreground font-bold py-3 px-8 rounded-md hover:bg-secondary/90 transition-colors">Conhecer o Grupo de Elite</a>
-
-                {% elif score_final >= 6.0 and score_final < 7.5 %}
-                <!-- Produto: Formação Lendária -->
-                <h3 class="text-3xl font-extrabold text-green-500">Formação Lendária</h3>
-                <p class="text-lg mt-4 mb-6 text-muted-foreground">Um programa educacional completo para desenvolver as competências essenciais em IA e gestão. Ideal para transformar sua carreira ou negócio, com um currículo focado em resultados práticos e visão de futuro.</p>
-                <a href="#" class="inline-block bg-green-500 text-white font-bold py-3 px-8 rounded-md hover:bg-green-600 transition-colors">Ver Detalhes da Formação</a>
-
-                {% elif score_final >= 2.0 and score_final < 6.0 %}
+                
                 <!-- Produto: Agentes Lendários -->
                 <h3 class="text-3xl font-extrabold text-yellow-500">Agentes Lendários</h3>
                 <p class="text-lg mt-4 mb-6 text-muted-foreground">Um treinamento prático e direto ao ponto, focado em ferramentas de IA para automação e eficiência. Aprenda a aplicar agentes de IA em tarefas específicas para obter ganhos imediatos de produtividade.</p>
                 <a href="#" class="inline-block bg-yellow-500 text-white font-bold py-3 px-8 rounded-md hover:bg-yellow-600 transition-colors">Quero Ser Mais Eficiente</a>
 
-                {% else %}
-                <!-- Produto: Ebook Melhores Prompts -->
-                <h3 class="text-3xl font-extrabold text-muted-foreground">Ebook: Melhores Prompts</h3>
-                <p class="text-lg mt-4 mb-6 text-muted-foreground">O primeiro passo perfeito para sua jornada em IA. Um guia fundamental, de baixo custo e sem compromisso, para você dominar a arte de criar prompts eficazes e extrair o máximo das ferramentas de IA.</p>
-                <a href="#" class="inline-block bg-muted text-muted-foreground font-bold py-3 px-8 rounded-md hover:bg-muted/90 transition-colors">Baixar o Ebook Agora</a>
-                {% endif %}
+                
             </div>
         </section>
 
@@ -209,7 +255,7 @@
             <p class="max-w-3xl mx-auto mb-6">
                 Nossa missão é capacitar líderes e empresas a prosperar na era da Inteligência Artificial. Combinamos educação de ponta, consultoria estratégica e uma comunidade de elite para criar os líderes do futuro.
             </p>
-            <p>&copy; {{ ano_atual }} Academia Lendária. Todos os direitos reservados.</p>
+            <p>&copy; 2025 Academia Lendária. Todos os direitos reservados.</p>
         </footer>
 
     </div>
@@ -229,11 +275,11 @@
                 datasets: [{
                     label: 'Seu Score',
                     data: [
-                        {{ scores_radar.poder_de_decisao }},
-                        {{ scores_radar.cultura_e_talentos }},
-                        {{ scores_radar.processos_e_automacao }},
-                        {{ scores_radar.inovacao_de_produtos }},
-                        {{ scores_radar.inteligencia_de_mercado }}
+                        6.7,
+                        2.5,
+                        10.0,
+                        3.3,
+                        0.0
                     ],
                     fill: true,
                     backgroundColor: 'hsla(var(--primary-hsl), 0.2)',

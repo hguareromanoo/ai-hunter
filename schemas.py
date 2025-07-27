@@ -30,7 +30,7 @@ class LeadProfileInput(BaseModel):
 
 class Opportunity(BaseModel):
     titulo: str = Field(..., description="Title of the opportunity.")
-    description: str = Field(..., description="Detailed description of the opportunity.")
+    description: str = Field(..., description="Detailed description of the opportunity personalized for the user profile.")
     roi: str = Field(..., description="Estimated Return on Investment.")
     priority: str = Field(..., description="Priority of the opportunity (alta, media, baixa).")
     case: str = Field(..., description="A success case for a similar company.")

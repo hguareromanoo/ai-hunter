@@ -3,7 +3,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from render_report import renderizar_relatorio
 from schemas import LeadProfileInput, FinalReportData, Opportunity
-from models import calculate_scores, opportunityTracker
+from models import calculate_scores, opportunityTracker, researchAgent
 from database import db_manager, get_db_pool
 import json
 import logging
@@ -71,12 +71,14 @@ async def run_full_diagnostic_flow(form_data: LeadProfileInput):
         
         opportunities = opportunities_result.output.opportunities
         logger.info(f"💡 Geradas {len(opportunities)} oportunidades")
-
+        introduction_result = researchAgent("Faça a pesquisa de mercado para o setor {form_data.p1_sector} de 400 caracteres em dois parágrafos",deps=form_data)
+        introduction_output = introduction_result.output if introduction_result and introduction_result.output else "Introdução não disponível."
         # 2. Consolidate data for the report
         report_data = FinalReportData(
             empresa={"nome": form_data.name or "Sua Empresa"},
             scores_radar=radar_scores,
             score_final=final_score,
+            introduction=introduction_output
             relatorio_oportunidades=opportunities,
             relatorio_riscos=[ 
                 {"titulo": "Segurança de Dados", "descricao": "A implementação de IA exige atenção redobrada à segurança dos dados e conformidade com a LGPD."},
@@ -97,7 +99,13 @@ async def run_full_diagnostic_flow(form_data: LeadProfileInput):
         # 4. Render and return the final HTML report
         html_content = renderizar_relatorio(report_data.dict())
         logger.info("✅ Relatório HTML gerado com sucesso")
+        from request_post import convert_html_to_pdf_and_send
+        convert_html_to_pdf_and_send(form_data, html_content)
+
+
+
         return HTMLResponse(content=html_content, status_code=200)
+    
 
     except Exception as e:
         logger.error(f"❌ Erro no processamento: {str(e)}")

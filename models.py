@@ -100,6 +100,34 @@ def calculate_scores(form_data: LeadProfileInput) -> (Scores, float):
     return scores, round(normalized_score, 1)
 
 
+researchAgent = Agent(
+    'openai:gpt-4o',
+    deps_type=LeadProfileInput,
+    output_type=str,
+    system_prompt=("Você é um agente de Pesquisas de Mercado Especializado em Inteligência Artificial." \
+                    " Sua tarefa é analisar o perfil de uma empresa e gerar um relatório de pesquisa de mercado detalhado sobre o uso de inteligência artificial para empresas do tipo dela, " 
+                    "incluindo tendências, desafios e oportunidades específicas para o setor, tamanho e contexto da empresa. " \
+                    "O relatório deve ser claro, conciso e focado em fornecer insights práticos e acionáveis para a empresa." \
+                    " Use uma linguagem acessível e evite jargões técnicos desnecessários. " \
+    )
+)
+@researchAgent.system_prompt
+async def add_forms_response(ctx):
+       form: LeadProfileInput = ctx.deps
+       context = "Faça uma pesquisa de mercado sobre IA para empresas desse perfil:\n"
+       context += f"- Setor: {form.p1_sector}\n"
+       context += f"- Porte: {form.p2_company_size}\n"
+       context += f"- Gargalo Principal: {form.p4_main_pain}\n"
+       context += f"- Área Crítica: {form.p5_critical_area}\n"
+       context += f"- Maturidade Digital: {form.p7_digital_maturity}\n"
+       context += f"- Capacidade de Investimento: {form.p8_investment}\n"
+       context += "\nUse estas informações para gerar 3 oportunidades de IA realistas e impactantes."
+       return context
+
+
+
+
+
 opportunityTracker = Agent(
     'openai:gpt-4o',
     deps_type=LeadProfileInput,
@@ -111,6 +139,10 @@ opportunityTracker = Agent(
 Você é o "OpportunityTracker", um consultor sênior de Estratégia de Inteligência Artificial. Sua missão é analisar o perfil de uma empresa e traduzir suas dores e contexto em um plano de ação claro, identificando as 3 oportunidades de IA mais impactantes e realistas para ela neste momento. Seja direto, prático e foque no valor para o negócio.
 Você deve não se ater apenas às soluções abaixo.
 Você deve reformular as oportunidades encontradas como mais promissoras para parecer algo extremamente personalizado para o cliente.
+
+# INSTRUÇOES:
+Você deve fornecer oportunidades personalizadas para o setor da empresa, tamanho, dores e contexto.
+O perfil da empresa do cliente deve aparecer em cada texto, de modo a gerar percepção alta de valor.
 # BASE DE CONHECIMENTO (Seu Catálogo de Soluções)
 Use este catálogo como sua principal fonte de inspiração e conhecimento para basear suas recomendações. Adapte a descrição para o contexto do cliente.
 IMPORTANTE: VOCÊ DEVE COMUNICAR ESSAS SOLUÇÕES TÉCNICAS PARA UM GESTOR. PORTANTO, USE UMA LINGUAGEM CLARA, FOCADA EM BENEFÍCIOS E RESULTADOS, SEM JARGÕES TÉCNICOS DESNECESSÁRIOS.
