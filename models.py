@@ -52,26 +52,72 @@ ALL_QUESTIONS_DATA = {
     }
 }
 
-def calculate_scores(form_data: LeadProfileInput) -> (Scores, float):
+def calculate_scores(form_data: LeadProfileInput) -> tuple[Scores, float]:
     """
     Calculates the radar scores and the final score based on the new points system.
     """
+    logger.info("🔍 INICIANDO CÁLCULO DE SCORES")
+    logger.info(f"📋 Dados recebidos: {form_data.dict()}")
+    
     # Helper to get points from the raw text answers
     def get_points(question_id: str, answer_text: str) -> float:
+        logger.info(f"🔎 Processando: {question_id} = '{answer_text}'")
+        
         if not answer_text:
+            logger.warning(f"⚠️  {question_id}: Resposta vazia")
             return 0.0
-        # Find the key that is a substring of the answer
-        for key, points in ALL_QUESTIONS_DATA.get(question_id, {}).items():
-            if key in answer_text:
+        
+        question_data = ALL_QUESTIONS_DATA.get(question_id, {})
+        if not question_data:
+            logger.error(f"❌ {question_id}: Não encontrado em ALL_QUESTIONS_DATA")
+            return 0.0
+        
+        # Find the key that is a substring of the answer (ou vice-versa)
+        for key, points in question_data.items():
+            # Tenta match exato primeiro
+            if key == answer_text:
+                logger.info(f"✅ {question_id}: Match exato '{key}' = {points} pontos")
                 return float(points)
+            # Depois tenta substring (mais flexível)
+            if key in answer_text or answer_text in key:
+                logger.info(f"✅ {question_id}: Match parcial '{key}' em '{answer_text}' = {points} pontos")
+                return float(points)
+        
+        # Log todas as opções disponíveis se não encontrou match
+        logger.error(f"❌ {question_id}: Nenhum match encontrado para '{answer_text}'")
+        logger.error(f"   Opções disponíveis: {list(question_data.keys())}")
         return 0.0
 
     # Calculate individual dimension scores (normalized to 0-10)
-    poder_de_decisao = get_points("role", form_data.p3_role) * (10/3)
-    maturidade_digital = get_points("maturity", form_data.p7_digital_maturity) * (10/2)
-    dor = get_points("pain", form_data.p4_main_pain) * (10/2)
-    poder_investimento = get_points("investment", form_data.p8_investment) * (10/3)
-    urgencia = get_points("urgency", form_data.p9_urgency) * (10/2)
+    logger.info("📊 Calculando scores individuais...")
+    
+    # Mapeamento correto das respostas para os IDs das perguntas
+    poder_decisao_raw = get_points("role", form_data.p3_role)
+    maturidade_digital_raw = get_points("maturity", form_data.p7_digital_maturity)
+    dor_raw = get_points("pain", form_data.p4_main_pain)
+    investimento_raw = get_points("investment", form_data.p8_investment)
+    urgencia_raw = get_points("urgency", form_data.p9_urgency)
+    
+    logger.info(f"🎯 Pontos brutos:")
+    logger.info(f"   Poder de decisão: {poder_decisao_raw} (max: 3)")
+    logger.info(f"   Maturidade digital: {maturidade_digital_raw} (max: 2)")
+    logger.info(f"   Dor: {dor_raw} (max: 2)")
+    logger.info(f"   Investimento: {investimento_raw} (max: 3)")
+    logger.info(f"   Urgência: {urgencia_raw} (max: 2)")
+    
+    # Normaliza para 0-10
+    poder_de_decisao = poder_decisao_raw * (10/3) if poder_decisao_raw > 0 else 0
+    maturidade_digital = maturidade_digital_raw * (10/2) if maturidade_digital_raw > 0 else 0
+    dor = dor_raw * (10/2) if dor_raw > 0 else 0
+    poder_investimento = investimento_raw * (10/3) if investimento_raw > 0 else 0
+    urgencia = urgencia_raw * (10/2) if urgencia_raw > 0 else 0
+
+    logger.info(f"📈 Scores normalizados (0-10):")
+    logger.info(f"   Poder de decisão: {poder_de_decisao}")
+    logger.info(f"   Maturidade digital: {maturidade_digital}")
+    logger.info(f"   Dor: {dor}")
+    logger.info(f"   Poder investimento: {poder_investimento}")
+    logger.info(f"   Urgência: {urgencia}")
 
     scores = Scores(
         poder_de_decisao=round(poder_de_decisao, 1),
@@ -80,24 +126,79 @@ def calculate_scores(form_data: LeadProfileInput) -> (Scores, float):
         inovacao_de_produtos=round(poder_investimento, 1),
         inteligencia_de_mercado=round(urgencia, 1)
     )
+    
+    logger.info(f"📋 Scores finais: {scores.dict()}")
 
     # Calculate final weighted score (0-10)
     # Weights: role(0.2), pain(0.25), quantify(0.1), maturity(0.15), investment(0.2), urgency(0.1)
+    
+    # Para quantify, precisamos processar p6_pain_quant
+    quantify_raw = get_points("quantifyPain", form_data.p6_pain_quant or "")
+    
+    logger.info(f"🔢 Calculando score final ponderado:")
+    logger.info(f"   Role ({form_data.p3_role}): {poder_decisao_raw} * 0.2")
+    logger.info(f"   Pain ({form_data.p4_main_pain}): {dor_raw} * 0.25")
+    logger.info(f"   Quantify ({form_data.p6_pain_quant}): {quantify_raw} * 0.1")
+    logger.info(f"   Maturity ({form_data.p7_digital_maturity}): {maturidade_digital_raw} * 0.15")
+    logger.info(f"   Investment ({form_data.p8_investment}): {investimento_raw} * 0.2")
+    logger.info(f"   Urgency ({form_data.p9_urgency}): {urgencia_raw} * 0.1")
+    
     final_score = (
-        get_points("role", form_data.p3_role) * 0.2 +
-        get_points("pain", form_data.p4_main_pain) * 0.25 +
-        get_points("quantifyPain", form_data.p6_pain_quant) * 0.1 +
-        get_points("maturity", form_data.p7_digital_maturity) * 0.15 +
-        get_points("investment", form_data.p8_investment) * 0.2 +
-        get_points("urgency", form_data.p9_urgency) * 0.1
+        poder_decisao_raw * 0.2 +
+        dor_raw * 0.25 +
+        quantify_raw * 0.1 +
+        maturidade_digital_raw * 0.15 +
+        investimento_raw * 0.2 +
+        urgencia_raw * 0.1
     )
+    
+    logger.info(f"🎯 Score ponderado bruto: {final_score}")
     
     # Normalize final score to a 0-10 scale
     # Max possible points: (3*0.2)+(2*0.25)+(3*0.1)+(2*0.15)+(3*0.2)+(2*0.1) = 0.6+0.5+0.3+0.3+0.6+0.2 = 2.5
     max_score = 2.5
     normalized_score = (final_score / max_score) * 10
     
-    return scores, round(normalized_score, 1)
+    logger.info(f"🎯 Score final normalizado: {normalized_score} (max possível: {max_score})")
+    
+    final_rounded = round(normalized_score, 1)
+    
+    logger.info("✅ CÁLCULO DE SCORES CONCLUÍDO")
+    logger.info(f"📊 Resultado final: Score = {final_rounded}, Radar = {scores.dict()}")
+    
+    return scores, final_rounded
+
+
+# Função de teste para debug
+def test_calculate_scores():
+    """Função para testar o cálculo de scores com dados mockados"""
+    
+    # Dados de teste
+    test_data = LeadProfileInput(
+        name="Teste Company",
+        p0_email="teste@teste.com",
+        p_phone="11999999999",
+        p1_sector="Tecnologia/Software",
+        p2_company_size="11-50 funcionários",
+        p3_role="Sócio(a)/CEO/Fundador(a)",
+        p4_main_pain="Processos manuais e repetitivos",
+        p5_critical_area="Operações",
+        p6_pain_quant="Sim, é um custo significativo (>R$ 10k/mês)",
+        p7_digital_maturity="Temos sistemas centralizados (CRM/ERP)",
+        p8_investment="Entre R$ 30.000 e R$ 100.000",
+        p9_urgency="Alta - Próximos 3 meses"
+    )
+    
+    print("🧪 TESTE DE CÁLCULO DE SCORES")
+    print("=" * 50)
+    
+    scores, final_score = calculate_scores(test_data)
+    
+    print(f"Resultado: {final_score}")
+    print(f"Radar: {scores.dict()}")
+    
+    return scores, final_score
+
 
 
 researchAgent = Agent(
