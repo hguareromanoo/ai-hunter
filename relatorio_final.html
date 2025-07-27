@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-al">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório de Diagnóstico de IA - Nexus Corp</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Source+Serif+Pro:wght@400;600;700&display=swap');
+        
+        :root {
+            --background: #ffffff;
+            --foreground: #111827; /* text-gray-900 */
+            --card: #ffffff;
+            --card-foreground: #111827;
+            --popover: #ffffff;
+            --popover-foreground: #111827;
+            --primary: #3b82f6; /* blue-500 */
+            --primary-foreground: #ffffff;
+            --primary-hsl: 217, 91%, 60%;
+            --secondary: #6b7280; /* gray-500 */
+            --secondary-foreground: #ffffff;
+            --muted: #f3f4f6; /* gray-100 */
+            --muted-foreground: #6b7280; /* gray-500 */
+            --accent: #f3f4f6; /* gray-100 */
+            --accent-foreground: #111827;
+            --destructive: #ef4444; /* red-500 */
+            --destructive-foreground: #ffffff;
+            --border: #e5e7eb; /* gray-200 */
+            --input: #e5e7eb;
+            --ring: #3b82f6;
+            --radius: 0.5rem;
+        }
+
+        body {
+            font-family: 'Source Serif Pro', serif;
+            background-color: var(--background);
+            color: var(--foreground);
+        }
+        .page-break {
+            page-break-after: always;
+        }
+        @media print {
+            body {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .no-print {
+                display: none;
+            }
+            .page-break {
+                page-break-after: always;
+            }
+        }
+    </style>
+</head>
+<body class="bg-background text-foreground">
+
+    <div class="container mx-auto p-4 sm:p-8 max-w-4xl bg-white shadow-lg rounded-lg">
+
+        <!-- Seção 1: Capa -->
+        <section id="capa" class="h-screen flex flex-col justify-center items-center text-center bg-gray-900 text-white rounded-t-lg">
+            <div class="w-32 h-32 mb-6 text-primary">
+                <!-- Placeholder para Logo -->
+                <svg class="w-full h-full" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5-10-5-10 5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-bold">Diagnóstico de Maturidade em IA</h1>
+            <h2 class="text-2xl md:text-3xl font-light mt-4 text-muted-foreground">Relatório Estratégico para</h2>
+            <p class="text-3xl md:text-4xl font-bold mt-2 text-primary">Nexus Corp</p>
+            <p class="mt-8 text-sm text-muted-foreground">Gerado em: 27/07/2025</p>
+        </section>
+
+        <div class="page-break"></div>
+
+        <!-- Seção 2: Introdução (Panorama do Setor) -->
+        <section id="introducao" class="py-12 px-6">
+            <h2 class="text-3xl font-bold border-b-2 border-primary pb-2 mb-6">1. Panorama do Setor e a Revolução da IA</h2>
+            <p class="text-lg leading-relaxed mb-4">
+                Vivemos um momento de transformação sem precedentes. A Inteligência Artificial deixou de ser uma promessa futura para se tornar a principal força motriz de inovação e eficiência no cenário de negócios atual. Empresas que integram a IA em seus processos não estão apenas otimizando operações, mas redefinindo seus mercados.
+            </p>
+            <p class="text-lg leading-relaxed">
+                Este relatório oferece um diagnóstico claro da maturidade da <strong>Nexus Corp</strong> em relação à IA. Ele foi projetado para fornecer insights práticos e um roteiro estratégico, permitindo que sua empresa não apenas se adapte, mas lidere na nova economia digital.
+            </p>
+        </section>
+
+        <div class="page-break"></div>
+
+        <!-- Seção 3: Dashboard do Diagnóstico -->
+        <section id="dashboard" class="py-12 px-6 bg-muted">
+            <h2 class="text-3xl font-bold border-b-2 border-primary pb-2 mb-8">2. Dashboard do Diagnóstico</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div class="text-center">
+                    <h3 class="text-2xl font-semibold mb-4 text-muted-foreground">Score Final de Maturidade em IA</h3>
+                    <div class="relative w-48 h-48 mx-auto">
+                        <svg class="w-full h-full" viewBox="0 0 36 36">
+                            <path class="text-muted" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3.8"></path>
+                            <path class="text-primary" stroke-dasharray="68.0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3.8" stroke-linecap="round"></path>
+                        </svg>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <span class="text-5xl font-bold text-foreground">6.8</span>
+                        </div>
+                    </div>
+                    <p class="text-lg mt-4 text-muted-foreground">de 10.0</p>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-semibold mb-4 text-center md:text-left text-muted-foreground">Análise por Pilar Estratégico</h3>
+                    <canvas id="radarChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <div class="page-break"></div>
+
+        <!-- Seção 4: 3 Maiores Oportunidades -->
+        <section id="oportunidades" class="py-12 px-6 bg-gray-50">
+            <h2 class="text-3xl font-bold border-b-2 border-primary pb-2 mb-8">3. Suas 3 Maiores Oportunidades</h2>
+            <div class="space-y-8">
+                
+                <div class="bg-white border border-border rounded-lg shadow-md overflow-hidden">
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-2xl font-bold text-primary">Inteligência de Mercado Preditiva</h3>
+                            <span class="
+                                 bg-red-500
+                                
+                                text-white text-xs font-bold uppercase px-3 py-1 rounded-full">
+                                Prioridade alta
+                            </span>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                            <!-- Box da Aplicação -->
+                            <div class="bg-gray-100 p-4 rounded-lg">
+                                <h4 class="font-bold text-lg mb-2 text-gray-800">Aplicação de IA</h4>
+                                <p class="text-gray-600">Implementar um sistema de IA para análise preditiva de tendências pode antecipar movimentos de concorrentes e identificar novas oportunidades de receita antes que se tornem óbvias.</p>
+                                <div class="mt-4">
+                                    <p class="font-bold text-gray-800">Retorno Estimado (ROI):</p>
+                                    <p class="text-green-600 font-bold text-lg">Potencial de +15% de market share em 2 anos.</p>
+                                </div>
+                            </div>
+                            <!-- Box do Case -->
+                            <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-lg">
+                                <h4 class="font-bold text-lg mb-2 text-blue-800">Caso de Sucesso</h4>
+                                <p class="text-blue-700 italic">"A Empresa 'AlfaTech' usou uma abordagem similar e conseguiu prever uma mudança de mercado, capturando 50.000 novos clientes antes dos concorrentes."</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white border border-border rounded-lg shadow-md overflow-hidden">
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-2xl font-bold text-primary">Capacitação Contínua em IA para Equipes</h3>
+                            <span class="
+                                 bg-yellow-500
+                                
+                                text-white text-xs font-bold uppercase px-3 py-1 rounded-full">
+                                Prioridade media
+                            </span>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                            <!-- Box da Aplicação -->
+                            <div class="bg-gray-100 p-4 rounded-lg">
+                                <h4 class="font-bold text-lg mb-2 text-gray-800">Aplicação de IA</h4>
+                                <p class="text-gray-600">Para elevar o score de Cultura e Talentos, invista em programas de formação contínua. Workshops práticos sobre ferramentas de IA generativa podem aumentar a eficiência e a inovação em todos os departamentos.</p>
+                                <div class="mt-4">
+                                    <p class="font-bold text-gray-800">Retorno Estimado (ROI):</p>
+                                    <p class="text-green-600 font-bold text-lg">Aumento de 25% na produtividade interna.</p>
+                                </div>
+                            </div>
+                            <!-- Box do Case -->
+                            <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-lg">
+                                <h4 class="font-bold text-lg mb-2 text-blue-800">Caso de Sucesso</h4>
+                                <p class="text-blue-700 italic">"A 'InovaCorp' implementou workshops de IA e viu uma redução de 40% no tempo de execução de tarefas administrativas, além de um aumento no engajamento dos funcionários."</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white border border-border rounded-lg shadow-md overflow-hidden">
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-2xl font-bold text-primary">Otimização da Experiência do Cliente com Chatbots</h3>
+                            <span class="
+                                 bg-green-500
+                                
+                                text-white text-xs font-bold uppercase px-3 py-1 rounded-full">
+                                Prioridade baixa
+                            </span>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                            <!-- Box da Aplicação -->
+                            <div class="bg-gray-100 p-4 rounded-lg">
+                                <h4 class="font-bold text-lg mb-2 text-gray-800">Aplicação de IA</h4>
+                                <p class="text-gray-600">Aproveite seu alto score em Processos para implementar um chatbot avançado no atendimento ao cliente. Isso pode reduzir o tempo de resposta e aumentar a satisfação.</p>
+                                <div class="mt-4">
+                                    <p class="font-bold text-gray-800">Retorno Estimado (ROI):</p>
+                                    <p class="text-green-600 font-bold text-lg">Redução de 30% nos custos de suporte ao cliente.</p>
+                                </div>
+                            </div>
+                            <!-- Box do Case -->
+                            <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-lg">
+                                <h4 class="font-bold text-lg mb-2 text-blue-800">Caso de Sucesso</h4>
+                                <p class="text-blue-700 italic">"A 'Soluções Rápidas Ltda' integrou um chatbot inteligente e conseguiu resolver 70% das solicitações de clientes sem intervenção humana, melhorando o NPS em 10 pontos."</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </section>
+
+        <!-- Seção 5: O Que Evitar Agora -->
+        <section id="evitar" class="py-12 px-6">
+            <h2 class="text-3xl font-bold border-b-2 border-destructive pb-2 mb-8">4. O Que Evitar Agora</h2>
+            <div class="space-y-6">
+                
+                <div class="bg-destructive/10 border border-destructive/20 rounded-lg p-6">
+                    <h3 class="text-xl font-bold text-destructive mb-2">Dependência de Processos Manuais em Análise de Dados</h3>
+                    <p class="text-muted-foreground">A falta de automação na coleta e análise de dados de mercado pode levar a decisões baseadas em informações desatualizadas, colocando a empresa em desvantagem competitiva.</p>
+                </div>
+                
+                <div class="bg-destructive/10 border border-destructive/20 rounded-lg p-6">
+                    <h3 class="text-xl font-bold text-destructive mb-2">Risco de Obsolescência Tecnológica</h3>
+                    <p class="text-muted-foreground">O ritmo acelerado da IA significa que as ferramentas e técnicas de hoje podem estar desatualizadas amanhã. É crucial criar um processo para avaliar e adotar novas tecnologias de forma ágil.</p>
+                </div>
+                
+            </div>
+        </section>
+
+        <div class="page-break"></div>
+
+        <!-- Seção 6: Próximo Passo Ideal (CTA) -->
+        <section id="cta" class="py-16 px-6 bg-gray-900 text-white text-center">
+            <h2 class="text-3xl font-bold mb-4">Seu Próximo Passo Ideal</h2>
+            <p class="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">Com base no seu score de maturidade, este é o programa que recomendamos para acelerar sua jornada com IA.</p>
+
+            <div class="max-w-2xl mx-auto bg-card text-card-foreground rounded-lg shadow-2xl p-8">
+                
+                <!-- Produto: Formação Lendária -->
+                <h3 class="text-3xl font-extrabold text-green-500">Formação Lendária</h3>
+                <p class="text-lg mt-4 mb-6 text-muted-foreground">Um programa educacional completo para desenvolver as competências essenciais em IA e gestão. Ideal para transformar sua carreira ou negócio, com um currículo focado em resultados práticos e visão de futuro.</p>
+                <a href="#" class="inline-block bg-green-500 text-white font-bold py-3 px-8 rounded-md hover:bg-green-600 transition-colors">Ver Detalhes da Formação</a>
+
+                
+            </div>
+        </section>
+
+        <!-- Seção 7: Sobre Nós (Rodapé) -->
+        <footer id="sobre" class="py-8 px-6 bg-gray-900 text-muted-foreground text-center rounded-b-lg">
+            <h2 class="text-2xl font-bold mb-4 text-white">Sobre a Academia Lendária</h2>
+            <p class="max-w-3xl mx-auto mb-6">
+                Nossa missão é capacitar líderes e empresas a prosperar na era da Inteligência Artificial. Combinamos educação de ponta, consultoria estratégica e uma comunidade de elite para criar os líderes do futuro.
+            </p>
+            <p>&copy; 2025 Academia Lendária. Todos os direitos reservados.</p>
+        </footer>
+
+    </div>
+
+    <script>
+        const ctx = document.getElementById('radarChart');
+        new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: [
+                    'Poder de Decisão',
+                    'Cultura e Talentos',
+                    'Processos e Automação',
+                    'Inovação de Produtos',
+                    'Inteligência de Mercado'
+                ],
+                datasets: [{
+                    label: 'Seu Score',
+                    data: [
+                        8.8,
+                        6.5,
+                        9.2,
+                        7.1,
+                        5.5
+                    ],
+                    fill: true,
+                    backgroundColor: 'hsla(var(--primary-hsl), 0.2)',
+                    borderColor: 'hsl(var(--primary-hsl))',
+                    pointBackgroundColor: 'hsl(var(--primary-hsl))',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'hsl(var(--primary-hsl))'
+                }]
+            },
+            options: {
+                elements: {
+                    line: {
+                        borderWidth: 3
+                    }
+                },
+                scales: {
+                    r: {
+                        angleLines: {
+                            display: false
+                        },
+                        suggestedMin: 0,
+                        suggestedMax: 10,
+                        pointLabels: {
+                            font: {
+                                size: 12,
+                                weight: 'bold'
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+    </script>
+
+</body>
+</html>

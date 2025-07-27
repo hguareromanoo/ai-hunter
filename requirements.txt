@@ -1,0 +1,8 @@
+fastapi
+uvicorn[standard]
+pydantic[email]
+pydantic-ai
+python-dotenv
+asyncpg
+jinja2
+requests

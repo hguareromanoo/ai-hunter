@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-al">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório de Diagnóstico de IA - {{ empresa.nome }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Source+Serif+Pro:wght@400;600;700&display=swap');
+        
+        :root {
+            --background: #ffffff;
+            --foreground: #111827; /* text-gray-900 */
+            --card: #ffffff;
+            --card-foreground: #111827;
+            --popover: #ffffff;
+            --popover-foreground: #111827;
+            --primary: #3b82f6; /* blue-500 */
+            --primary-foreground: #ffffff;
+            --primary-hsl: 217, 91%, 60%;
+            --secondary: #6b7280; /* gray-500 */
+            --secondary-foreground: #ffffff;
+            --muted: #f3f4f6; /* gray-100 */
+            --muted-foreground: #6b7280; /* gray-500 */
+            --accent: #f3f4f6; /* gray-100 */
+            --accent-foreground: #111827;
+            --destructive: #ef4444; /* red-500 */
+            --destructive-foreground: #ffffff;
+            --border: #e5e7eb; /* gray-200 */
+            --input: #e5e7eb;
+            --ring: #3b82f6;
+            --radius: 0.5rem;
+        }
+
+        body {
+            font-family: 'Source Serif Pro', serif;
+            background-color: var(--background);
+            color: var(--foreground);
+        }
+        .page-break {
+            page-break-after: always;
+        }
+        @media print {
+            body {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .no-print {
+                display: none;
+            }
+            .page-break {
+                page-break-after: always;
+            }
+        }
+    </style>
+</head>
+<body class="bg-background text-foreground">
+
+    <div class="container mx-auto p-4 sm:p-8 max-w-4xl bg-white shadow-lg rounded-lg">
+
+        <!-- Seção 1: Capa -->
+        <section id="capa" class="h-screen flex flex-col justify-center items-center text-center bg-gray-900 text-white rounded-t-lg">
+            <div class="w-32 h-32 mb-6 text-primary">
+                <!-- Placeholder para Logo -->
+                <svg class="w-full h-full" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5-10-5-10 5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-bold">Diagnóstico de Maturidade em IA</h1>
+            <h2 class="text-2xl md:text-3xl font-light mt-4 text-muted-foreground">Relatório Estratégico para</h2>
+            <p class="text-3xl md:text-4xl font-bold mt-2 text-primary">{{ empresa.nome }}</p>
+            <p class="mt-8 text-sm text-muted-foreground">Gerado em: {{ data_geracao }}</p>
+        </section>
+
+        <div class="page-break"></div>
+
+        <!-- Seção 2: Introdução (Panorama do Setor) -->
+        <section id="introducao" class="py-12 px-6">
+            <h2 class="text-3xl font-bold border-b-2 border-primary pb-2 mb-6">1. Panorama do Setor e a Revolução da IA</h2>
+            <p class="text-lg leading-relaxed mb-4">
+                Vivemos um momento de transformação sem precedentes. A Inteligência Artificial deixou de ser uma promessa futura para se tornar a principal força motriz de inovação e eficiência no cenário de negócios atual. Empresas que integram a IA em seus processos não estão apenas otimizando operações, mas redefinindo seus mercados.
+            </p>
+            <p class="text-lg leading-relaxed">
+                Este relatório oferece um diagnóstico claro da maturidade da <strong>{{ empresa.nome }}</strong> em relação à IA. Ele foi projetado para fornecer insights práticos e um roteiro estratégico, permitindo que sua empresa não apenas se adapte, mas lidere na nova economia digital.
+            </p>
+        </section>
+
+        <div class="page-break"></div>
+
+        <!-- Seção 3: Dashboard do Diagnóstico -->
+        <section id="dashboard" class="py-12 px-6 bg-muted">
+            <h2 class="text-3xl font-bold border-b-2 border-primary pb-2 mb-8">2. Dashboard do Diagnóstico</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div class="text-center">
+                    <h3 class="text-2xl font-semibold mb-4 text-muted-foreground">Score Final de Maturidade em IA</h3>
+                    <div class="relative w-48 h-48 mx-auto">
+                        <svg class="w-full h-full" viewBox="0 0 36 36">
+                            <path class="text-muted" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3.8"></path>
+                            <path class="text-primary" stroke-dasharray="{{ score_final * 10 }}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3.8" stroke-linecap="round"></path>
+                        </svg>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <span class="text-5xl font-bold text-foreground">{{ "%.1f"|format(score_final) }}</span>
+                        </div>
+                    </div>
+                    <p class="text-lg mt-4 text-muted-foreground">de 10.0</p>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-semibold mb-4 text-center md:text-left text-muted-foreground">Análise por Pilar Estratégico</h3>
+                    <canvas id="radarChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <div class="page-break"></div>
+
+        <!-- Seção 4: 3 Maiores Oportunidades -->
+        <section id="oportunidades" class="py-12 px-6 bg-gray-50">
+            <h2 class="text-3xl font-bold border-b-2 border-primary pb-2 mb-8">3. Suas 3 Maiores Oportunidades</h2>
+            <div class="space-y-8">
+                {% for oportunidade in relatorio_oportunidades %}
+                <div class="bg-white border border-border rounded-lg shadow-md overflow-hidden">
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-2xl font-bold text-primary">{{ oportunidade.titulo }}</h3>
+                            <span class="
+                                {% if oportunidade.priority == 'alta' %} bg-red-500
+                                {% elif oportunidade.priority == 'media' %} bg-yellow-500
+                                {% else %} bg-green-500
+                                {% endif %}
+                                text-white text-xs font-bold uppercase px-3 py-1 rounded-full">
+                                Prioridade {{ oportunidade.priority }}
+                            </span>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                            <!-- Box da Aplicação -->
+                            <div class="bg-gray-100 p-4 rounded-lg">
+                                <h4 class="font-bold text-lg mb-2 text-gray-800">Aplicação de IA</h4>
+                                <p class="text-gray-600">{{ oportunidade.description }}</p>
+                                <div class="mt-4">
+                                    <p class="font-bold text-gray-800">Retorno Estimado (ROI):</p>
+                                    <p class="text-green-600 font-bold text-lg">{{ oportunidade.roi }}</p>
+                                </div>
+                            </div>
+                            <!-- Box do Case -->
+                            <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-lg">
+                                <h4 class="font-bold text-lg mb-2 text-blue-800">Caso de Sucesso</h4>
+                                <p class="text-blue-700 italic">"{{ oportunidade.case }}"</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- Seção 5: O Que Evitar Agora -->
+        <section id="evitar" class="py-12 px-6">
+            <h2 class="text-3xl font-bold border-b-2 border-destructive pb-2 mb-8">4. O Que Evitar Agora</h2>
+            <div class="space-y-6">
+                {% for risco in relatorio_riscos %}
+                <div class="bg-destructive/10 border border-destructive/20 rounded-lg p-6">
+                    <h3 class="text-xl font-bold text-destructive mb-2">{{ risco.titulo }}</h3>
+                    <p class="text-muted-foreground">{{ risco.descricao }}</p>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <div class="page-break"></div>
+
+        <!-- Seção 6: Próximo Passo Ideal (CTA) -->
+        <section id="cta" class="py-16 px-6 bg-gray-900 text-white text-center">
+            <h2 class="text-3xl font-bold mb-4">Seu Próximo Passo Ideal</h2>
+            <p class="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">Com base no seu score de maturidade, este é o programa que recomendamos para acelerar sua jornada com IA.</p>
+
+            <div class="max-w-2xl mx-auto bg-card text-card-foreground rounded-lg shadow-2xl p-8">
+                {% if score_final >= 8.5 %}
+                <!-- Produto: Mentor[IA] -->
+                <h3 class="text-3xl font-extrabold text-primary">Mentor[IA]</h3>
+                <p class="text-lg mt-4 mb-6 text-muted-foreground">Uma parceria estratégica e pessoal para líderes que buscam não apenas adotar, mas definir o futuro da IA em seu setor. Foco em implementação de alto nível, inovação disruptiva e construção de um legado tecnológico.</p>
+                <a href="#" class="inline-block bg-primary text-primary-foreground font-bold py-3 px-8 rounded-md hover:bg-primary/90 transition-colors">Agendar Sessão Estratégica</a>
+
+                {% elif score_final >= 7.5 and score_final < 8.5 %}
+                <!-- Produto: Founders Lendários -->
+                <h3 class="text-3xl font-extrabold text-secondary">Founders Lendários</h3>
+                <p class="text-lg mt-4 mb-6 text-muted-foreground">Acesso a um grupo de elite de fundadores e CEOs. O foco é em networking de alto impacto, masterminds estratégicos e crescimento acelerado através da troca de experiências com os melhores do mercado.</p>
+                <a href="#" class="inline-block bg-secondary text-secondary-foreground font-bold py-3 px-8 rounded-md hover:bg-secondary/90 transition-colors">Conhecer o Grupo de Elite</a>
+
+                {% elif score_final >= 6.0 and score_final < 7.5 %}
+                <!-- Produto: Formação Lendária -->
+                <h3 class="text-3xl font-extrabold text-green-500">Formação Lendária</h3>
+                <p class="text-lg mt-4 mb-6 text-muted-foreground">Um programa educacional completo para desenvolver as competências essenciais em IA e gestão. Ideal para transformar sua carreira ou negócio, com um currículo focado em resultados práticos e visão de futuro.</p>
+                <a href="#" class="inline-block bg-green-500 text-white font-bold py-3 px-8 rounded-md hover:bg-green-600 transition-colors">Ver Detalhes da Formação</a>
+
+                {% elif score_final >= 2.0 and score_final < 6.0 %}
+                <!-- Produto: Agentes Lendários -->
+                <h3 class="text-3xl font-extrabold text-yellow-500">Agentes Lendários</h3>
+                <p class="text-lg mt-4 mb-6 text-muted-foreground">Um treinamento prático e direto ao ponto, focado em ferramentas de IA para automação e eficiência. Aprenda a aplicar agentes de IA em tarefas específicas para obter ganhos imediatos de produtividade.</p>
+                <a href="#" class="inline-block bg-yellow-500 text-white font-bold py-3 px-8 rounded-md hover:bg-yellow-600 transition-colors">Quero Ser Mais Eficiente</a>
+
+                {% else %}
+                <!-- Produto: Ebook Melhores Prompts -->
+                <h3 class="text-3xl font-extrabold text-muted-foreground">Ebook: Melhores Prompts</h3>
+                <p class="text-lg mt-4 mb-6 text-muted-foreground">O primeiro passo perfeito para sua jornada em IA. Um guia fundamental, de baixo custo e sem compromisso, para você dominar a arte de criar prompts eficazes e extrair o máximo das ferramentas de IA.</p>
+                <a href="#" class="inline-block bg-muted text-muted-foreground font-bold py-3 px-8 rounded-md hover:bg-muted/90 transition-colors">Baixar o Ebook Agora</a>
+                {% endif %}
+            </div>
+        </section>
+
+        <!-- Seção 7: Sobre Nós (Rodapé) -->
+        <footer id="sobre" class="py-8 px-6 bg-gray-900 text-muted-foreground text-center rounded-b-lg">
+            <h2 class="text-2xl font-bold mb-4 text-white">Sobre a Academia Lendária</h2>
+            <p class="max-w-3xl mx-auto mb-6">
+                Nossa missão é capacitar líderes e empresas a prosperar na era da Inteligência Artificial. Combinamos educação de ponta, consultoria estratégica e uma comunidade de elite para criar os líderes do futuro.
+            </p>
+            <p>&copy; {{ ano_atual }} Academia Lendária. Todos os direitos reservados.</p>
+        </footer>
+
+    </div>
+
+    <script>
+        const ctx = document.getElementById('radarChart');
+        new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: [
+                    'Poder de Decisão',
+                    'Cultura e Talentos',
+                    'Processos e Automação',
+                    'Inovação de Produtos',
+                    'Inteligência de Mercado'
+                ],
+                datasets: [{
+                    label: 'Seu Score',
+                    data: [
+                        {{ scores_radar.poder_de_decisao }},
+                        {{ scores_radar.cultura_e_talentos }},
+                        {{ scores_radar.processos_e_automacao }},
+                        {{ scores_radar.inovacao_de_produtos }},
+                        {{ scores_radar.inteligencia_de_mercado }}
+                    ],
+                    fill: true,
+                    backgroundColor: 'hsla(var(--primary-hsl), 0.2)',
+                    borderColor: 'hsl(var(--primary-hsl))',
+                    pointBackgroundColor: 'hsl(var(--primary-hsl))',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'hsl(var(--primary-hsl))'
+                }]
+            },
+            options: {
+                elements: {
+                    line: {
+                        borderWidth: 3
+                    }
+                },
+                scales: {
+                    r: {
+                        angleLines: {
+                            display: false
+                        },
+                        suggestedMin: 0,
+                        suggestedMax: 10,
+                        pointLabels: {
+                            font: {
+                                size: 12,
+                                weight: 'bold'
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+    </script>
+
+</body>
+</html>
