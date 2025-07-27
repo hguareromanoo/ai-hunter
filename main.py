@@ -108,7 +108,7 @@ async def run_full_diagnostic_flow(form_data: LeadProfileInput):
         # 3. Generate introduction - CORRIGIDO
         try:
             logger.info("🔍 Gerando introdução de pesquisa de mercado...")
-            introduction_result = await researchAgent.run(deps=form_data)
+            introduction_result = await researchAgent.run("Faça uma introdução para o relatorio com um panorama da IA para empresas como essa", deps=form_data)
             introduction_output = introduction_result.output if introduction_result and introduction_result.output else None
             
             if not introduction_output:
