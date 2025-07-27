@@ -1,7 +1,7 @@
-import os
-import json
-import datetime
 import jinja2
+import os
+import datetime
+
 def renderizar_relatorio(dados_diagnostico: dict) -> str:
     """
     Renderiza o template HTML do relatório com os dados fornecidos.
@@ -23,77 +23,50 @@ def renderizar_relatorio(dados_diagnostico: dict) -> str:
     dados_completos['data_geracao'] = datetime.datetime.now().strftime("%d/%m/%Y")
     dados_completos['ano_atual'] = datetime.datetime.now().year
 
+    # DEBUG: Log dos dados que estão sendo passados para o template
+    print(f"DEBUG - Score final para template: {dados_completos.get('score_final', 'NÃO ENCONTRADO')}")
+    print(f"DEBUG - Introduction: {dados_completos.get('introduction', 'NÃO ENCONTRADO')[:100] if dados_completos.get('introduction') else 'VAZIO'}...")
+    print(f"DEBUG - Scores radar: {dados_completos.get('scores_radar', 'NÃO ENCONTRADO')}")
+    print(f"DEBUG - Empresa: {dados_completos.get('empresa', 'NÃO ENCONTRADO')}")
+    print(f"DEBUG - Oportunidades: {len(dados_completos.get('relatorio_oportunidades', []))} encontradas")
+    
     # Renderiza o template com os dados
     return template.render(dados_completos)
 
 if __name__ == "__main__":
-    # Dados Mock para teste do relatório
-    # Simula o output que viria do diagnóstico
-    mock_data = {
-        "empresa": {
-            "nome": "Nexus Corp",
-            "setor": "Tecnologia",
-            "tamanho": "50-200 funcionários"
-        },
+    # Exemplo de uso standalone para testes
+    dados_teste = {
+        "empresa": {"nome": "Empresa Teste"},
+        "introduction": "Esta é uma introdução de teste para verificar se o template está funcionando corretamente.",
+        "score_final": 7.5,
         "scores_radar": {
-            "poder_de_decisao": 8.8,
+            "poder_de_decisao": 8.0,
             "cultura_e_talentos": 6.5,
-            "processos_e_automacao": 9.2,
-            "inovacao_de_produtos": 7.1,
-            "inteligencia_de_mercado": 5.5
+            "processos_e_automacao": 7.0,
+            "inovacao_de_produtos": 5.5,
+            "inteligencia_de_mercado": 8.5
         },
-        "score_final": 7.4, # Altere este valor para testar os diferentes CTAs
         "relatorio_oportunidades": [
             {
-                "titulo": "Inteligência de Mercado Preditiva",
-                "description": "Implementar um sistema de IA para análise preditiva de tendências pode antecipar movimentos de concorrentes e identificar novas oportunidades de receita antes que se tornem óbvias.",
-                "roi": "Potencial de +15% de market share em 2 anos.",
-                "priority": "alta",
-                "case": "A Empresa 'AlfaTech' usou uma abordagem similar e conseguiu prever uma mudança de mercado, capturando 50.000 novos clientes antes dos concorrentes."
-            },
-            {
-                "titulo": "Capacitação Contínua em IA para Equipes",
-                "description": "Para elevar o score de Cultura e Talentos, invista em programas de formação contínua. Workshops práticos sobre ferramentas de IA generativa podem aumentar a eficiência e a inovação em todos os departamentos.",
-                "roi": "Aumento de 25% na produtividade interna.",
-                "priority": "media",
-                "case": "A 'InovaCorp' implementou workshops de IA e viu uma redução de 40% no tempo de execução de tarefas administrativas, além de um aumento no engajamento dos funcionários."
-            },
-            {
-                "titulo": "Otimização da Experiência do Cliente com Chatbots",
-                "description": "Aproveite seu alto score em Processos para implementar um chatbot avançado no atendimento ao cliente. Isso pode reduzir o tempo de resposta e aumentar a satisfação.",
-                "roi": "Redução de 30% nos custos de suporte ao cliente.",
-                "priority": "baixa",
-                "case": "A 'Soluções Rápidas Ltda' integrou um chatbot inteligente e conseguiu resolver 70% das solicitações de clientes sem intervenção humana, melhorando o NPS em 10 pontos."
+                "titulo": "Automação de Processos",
+                "descricao": "Implementar RPA para automatizar tarefas repetitivas",
+                "roi_estimado": "200%",
+                "timeline": "3-6 meses",
+                "investimento": "R$ 50.000"
             }
         ],
         "relatorio_riscos": [
             {
-                "titulo": "Dependência de Processos Manuais em Análise de Dados",
-                "descricao": "A falta de automação na coleta e análise de dados de mercado pode levar a decisões baseadas em informações desatualizadas, colocando a empresa em desvantagem competitiva."
-            },
-            {
-                "titulo": "Risco de Obsolescência Tecnológica",
-                "descricao": "O ritmo acelerado da IA significa que as ferramentas e técnicas de hoje podem estar desatualizadas amanhã. É crucial criar um processo para avaliar e adotar novas tecnologias de forma ágil."
+                "titulo": "Segurança de Dados",
+                "descricao": "Necessidade de implementar medidas de segurança adequadas"
             }
         ]
     }
-
-    # Testando diferentes cenários de score_final
-    # Descomente uma das linhas abaixo para gerar um relatório com um CTA diferente
-    # mock_data['score_final'] = 9.0  # Mentor[IA]
-    # mock_data['score_final'] = 8.0  # Founders Lendários
-    mock_data['score_final'] = 6.8  # Formação Lendária
-    # mock_data['score_final'] = 4.5  # Agentes Lendários
-    # mock_data['score_final'] = 1.5  # Ebook Melhores Prompts
-
-    # Renderiza o relatório com os dados mock
-    html_output = renderizar_relatorio(mock_data)
-
-    # Salva o resultado no mesmo diretório do script
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    output_filename = os.path.join(script_dir, 'relatorio_final.html')
-    with open(output_filename, 'w', encoding='utf-8') as f:
+    
+    html_output = renderizar_relatorio(dados_teste)
+    
+    # Salva o resultado em um arquivo para visualização
+    with open('teste_template.html', 'w', encoding='utf-8') as f:
         f.write(html_output)
-
-    print(f"Relatório gerado com sucesso!")
-    print(f"Abra o arquivo '{output_filename}' em seu navegador para visualizar.")
+    
+    print("✅ Template de teste gerado: teste_template.html")
